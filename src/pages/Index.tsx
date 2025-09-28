@@ -5,23 +5,24 @@ import AudioControls from '@/components/AudioControls';
 import EmergencyInterface from '@/components/EmergencyInterface';
 import SettingsDashboard from '@/components/SettingsDashboard';
 import { Badge } from '@/components/ui/badge';
+import Logo from '@/components/Logo';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center space-y-3">
-          <h1 className="text-4xl font-bold text-foreground">
-            StrideGuide
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Offline Seeing-Eye Assistant for Seniors & Vision-Impaired Users
+        <div className="text-center space-y-6">
+          <div className="flex justify-center">
+            <Logo variant="wordmark" className="h-20 w-auto" />
+          </div>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Your seeing‑eye assistant in your pocket. Walk with confidence.
           </p>
-          <div className="flex justify-center gap-2">
+          <div className="flex justify-center gap-2 flex-wrap">
             <Badge variant="secondary">EN/FR Canada</Badge>
             <Badge variant="secondary">Offline-First</Badge>
-            <Badge variant="secondary">Accessibility-Focused</Badge>
+            <Badge variant="secondary">Privacy-First</Badge>
           </div>
         </div>
 
@@ -63,8 +64,8 @@ const Index = () => {
 
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground space-y-2">
-          <p>Prototype UI for StrideGuide v1 MVP</p>
-          <p>Production version will be native iOS/Android with on-device ML</p>
+          <p>Built in Canada • Privacy‑first • Works offline</p>
+          <p className="text-xs">Prototype UI for StrideGuide v1 MVP</p>
         </div>
       </div>
     </div>

@@ -8,95 +8,107 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 210 17% 98%;
-    --foreground: 222.2 84% 4.9%;
+    /* StrideGuide Brand Colors - Light Mode */
+    --background: 0 0% 100%; /* Surface Light: #FFFFFF */
+    --foreground: 215 25% 6%; /* Text Primary: #0B0F14 */
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 25% 6%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 25% 6%;
 
-    --primary: 221 39% 11%;
-    --primary-foreground: 210 17% 98%;
+    --primary: 238 66% 37%; /* Primary Indigo 800: #3730A3 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --primary-dark: 243 87% 20%; /* Primary Dark Indigo 950: #1E1B4B */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 215 25% 6%;
 
-    --accent: 212 100% 47%;
-    --accent-foreground: 210 17% 98%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 48 96% 89%;
+    --accent: 24 95% 53%; /* Accent Safety Orange: #F97316 */
+    --accent-foreground: 215 25% 6%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --success: 142 76% 36%; /* Success: #16A34A */
+    --success-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221 39% 11%;
+    --warning: 38 92% 50%; /* Warning Amber: #F59E0B */
+    --warning-foreground: 215 25% 6%;
+
+    --destructive: 0 74% 50%; /* Critical Red 600: #DC2626 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 238 66% 37%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Text tokens */
+    --text-inverse: 210 40% 98%; /* Text Inverse: #F8FAFC */
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 25% 6%;
+    --sidebar-primary: 238 66% 37%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 215 25% 6%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 238 66% 37%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 17% 98%;
+    /* StrideGuide Brand Colors - Dark Mode */
+    --background: 215 25% 5%; /* Surface Dark: #0B0F14 */
+    --foreground: 210 40% 98%; /* Text Inverse: #F8FAFC */
 
-    --card: 217.2 32.6% 17.5%;
-    --card-foreground: 210 17% 98%;
+    --card: 215 25% 8%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 217.2 32.6% 17.5%;
-    --popover-foreground: 210 17% 98%;
+    --popover: 215 25% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 210 17% 98%;
-    --primary-foreground: 221 39% 11%;
+    --primary: 238 66% 37%; /* Primary Indigo 800: #3730A3 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 17% 98%;
+    --primary-dark: 243 87% 20%; /* Primary Dark Indigo 950: #1E1B4B */
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --secondary: 215 25% 12%;
+    --secondary-foreground: 210 40% 98%;
 
-    --accent: 212 100% 47%;
-    --accent-foreground: 210 17% 98%;
+    --muted: 215 25% 12%;
+    --muted-foreground: 215 20% 65%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 48 96% 89%;
+    --accent: 24 95% 53%; /* Accent Safety Orange: #F97316 */
+    --accent-foreground: 215 25% 6%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 17% 98%;
+    --success: 142 76% 36%; /* Success: #16A34A */
+    --success-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212 100% 47%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --warning: 38 92% 50%; /* Warning Amber: #F59E0B */
+    --warning-foreground: 215 25% 6%;
+
+    --destructive: 0 74% 50%; /* Critical Red 600: #DC2626 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 25% 15%;
+    --input: 215 25% 15%;
+    --ring: 24 95% 53%;
+
+    /* Text tokens */
+    --text-inverse: 215 25% 6%; /* Text Primary for dark backgrounds */
+
+    --sidebar-background: 215 25% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 238 66% 37%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 215 25% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 215 25% 15%;
+    --sidebar-ring: 24 95% 53%;
   }
 }
 
