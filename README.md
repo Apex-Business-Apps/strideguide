@@ -24,6 +24,15 @@ An accessibility-first mobile assistant providing real-time obstacle detection, 
 - Stereo-panned TTS guidance ("Veer left", "Step up")
 - Night mode with low-light enhancement (Premium only)
 
+### Lost Item Finder (NEW)
+- Offline few-shot learning (3-4 clips or 12 photos per item)
+- On-device embeddings with encrypted local storage
+- Real-time object detection and matching via ML Kit/TensorFlow Lite
+- Audio beacon guidance with stereo panning + haptic "hot/cold" feedback
+- 5-10 FPS processing, ≤180ms per frame
+- ≥85% success rate at ≤3m distance
+- Airplane mode compatible (fully offline)
+
 ### Safety & Emergency
 - Fall detection via accelerometer + gyroscope fusion
 - 30-second confirmation countdown before automatic emergency contact

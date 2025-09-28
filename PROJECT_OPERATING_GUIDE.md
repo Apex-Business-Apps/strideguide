@@ -50,6 +50,14 @@ CLOUD_DESCRIBE_ENABLED: boolean (future feature, currently disabled)
 - **Hazard classes**: pothole, curb_up/down, step, ice_slick, cone, pole, bike, dog, vehicle, wall, dropoff
 - **Output format**: class, position (left/center/right), distance bin (near/mid/far)
 
+### Lost Item Finder Pipeline (NEW)
+- **Teaching**: 3-4 video clips or 12 photos per item with on-device embedding generation
+- **Detection**: MobileNet-SSD object detection → ROI extraction → embedding comparison
+- **Matching**: Cosine similarity with learned embeddings (threshold ≥0.7)
+- **Performance**: 5-10 FPS processing, ≤180ms per frame
+- **Storage**: Encrypted local storage for learned items (device keychain/keystore)
+- **Guidance**: Stereo audio panning + haptic distance feedback (hot/cold patterns)
+
 ### Audio Guidance System
 - **TTS engines**: AVSpeechSynthesizer (iOS), Android TextToSpeech
 - **Languages**: EN/FR with offline voice downloads required

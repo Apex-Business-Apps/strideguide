@@ -4,6 +4,47 @@
     "tagline": "Your seeing‑eye assistant in your pocket.",
     "slogan": "Walk with confidence."
   },
+  "navigation": {
+    "vision": "Vision",
+    "audio": "Audio", 
+    "emergency": "Emergency",
+    "finder": "Lost Items",
+    "settings": "Settings"
+  },
+  "finder": {
+    "title": "Lost Item Finder",
+    "teach_new": "Teach New Item",
+    "teaching": "Teaching...",
+    "find": "Find",
+    "searching": "Searching...",
+    "teach_locked": "Feature Locked",
+    "teach_locked_desc": "Free users can teach 1 item. Upgrade for unlimited items.",
+    "teaching_progress": "Teaching Progress",
+    "teaching_instruction": "Take photos from different angles and lighting conditions",
+    "item_detected": "Item Detected!",
+    "learned_items": "Learned Items",
+    "no_items": "No items learned yet. Teach your first item to get started.",
+    "audio_on": "Audio On",
+    "audio_off": "Audio Off", 
+    "haptics_on": "Haptics On",
+    "haptics_off": "Haptics Off",
+    "ready": "Ready",
+    "searching_active": "Searching Active",
+    "teaching_mode": "Teaching Mode",
+    "ml_model": "ML Model",
+    "on_device": "On-device",
+    "direction": {
+      "left": "Turn left",
+      "right": "Turn right",
+      "center": "Straight ahead"
+    },
+    "distance": {
+      "very_close": "Very close",
+      "close": "Close", 
+      "medium": "Getting warmer",
+      "far": "Keep searching"
+    }
+  },
   "plans": {
     "free": {
       "name": "Free",

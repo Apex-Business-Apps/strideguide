@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import VisionPanel from '@/components/VisionPanel';
 import AudioControls from '@/components/AudioControls';
 import EmergencyInterface from '@/components/EmergencyInterface';
+import LostItemFinder from '@/components/LostItemFinder';
 import SettingsDashboard from '@/components/SettingsDashboard';
 import UsageMeter from '@/components/UsageMeter';
 import { Badge } from '@/components/ui/badge';
@@ -32,7 +33,7 @@ const Index = () => {
 
         {/* Main Interface */}
         <Tabs defaultValue="vision" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="vision" className="text-sm">
               Vision
             </TabsTrigger>
@@ -41,6 +42,9 @@ const Index = () => {
             </TabsTrigger>
             <TabsTrigger value="emergency" className="text-sm">
               Emergency
+            </TabsTrigger>
+            <TabsTrigger value="finder" className="text-sm">
+              Lost Items
             </TabsTrigger>
             <TabsTrigger value="settings" className="text-sm">
               Settings
@@ -58,6 +62,10 @@ const Index = () => {
             
             <TabsContent value="emergency" className="w-full flex justify-center">
               <EmergencyInterface />
+            </TabsContent>
+            
+            <TabsContent value="finder" className="w-full flex justify-center">
+              <LostItemFinder />
             </TabsContent>
             
             <TabsContent value="settings" className="w-full flex justify-center">
