@@ -1,0 +1,59 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:stride-guide-sbom-2025-01",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-01-15T00:00:00Z",
+    "tools": [
+      {
+        "vendor": "StrideGuide",
+        "name": "Security Scanner",
+        "version": "2.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "StrideGuide",
+      "version": "2.0.0",
+      "description": "Offline-first accessibility assistant PWA"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "react",
+      "version": "^18.3.1",
+      "licenses": [{ "license": { "id": "MIT" } }],
+      "purl": "pkg:npm/react@18.3.1"
+    },
+    {
+      "type": "library", 
+      "name": "@supabase/supabase-js",
+      "version": "^2.58.0",
+      "licenses": [{ "license": { "id": "MIT" } }],
+      "purl": "pkg:npm/@supabase/supabase-js@2.58.0"
+    },
+    {
+      "type": "library",
+      "name": "workbox-precaching",
+      "version": "^7.3.0", 
+      "licenses": [{ "license": { "id": "MIT" } }],
+      "purl": "pkg:npm/workbox-precaching@7.3.0"
+    },
+    {
+      "type": "library",
+      "name": "onnxruntime-web",
+      "version": "^1.23.0",
+      "licenses": [{ "license": { "id": "MIT" } }],
+      "purl": "pkg:npm/onnxruntime-web@1.23.0"
+    }
+  ],
+  "vulnerabilities": [],
+  "dependencies": [
+    {
+      "ref": "pkg:npm/react@18.3.1",
+      "dependsOn": ["pkg:npm/react-dom@18.3.1"]
+    }
+  ]
+}

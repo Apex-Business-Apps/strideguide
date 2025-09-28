@@ -6,6 +6,8 @@
 class WakeLockManagerClass {
   private wakeLock: WakeLockSentinel | null = null;
   private wakeLockSupported = 'wakeLock' in navigator;
+  private deniedCount = 0;
+  private maxDenials = 2;
 
   async request(): Promise<void> {
     if (!this.wakeLockSupported) {
@@ -36,7 +38,17 @@ class WakeLockManagerClass {
       
       console.log('Screen wake lock acquired successfully');
     } catch (error) {
+      this.deniedCount++;
       console.error('Failed to acquire wake lock:', error);
+      
+      if (this.deniedCount >= this.maxDenials) {
+        // Show settings tip after multiple denials
+        const statusEl = document.getElementById('status-announcer');
+        if (statusEl) {
+          statusEl.textContent = 'Screen may dim during guidance. Check device settings to keep screen on.';
+        }
+      }
+      
       throw error;
     }
   }
@@ -71,6 +83,11 @@ class WakeLockManagerClass {
     } else if (document.visibilityState === 'hidden') {
       console.log('Page became hidden, wake lock may be released automatically');
     }
+  }
+
+  // Reset denial count when user manually enables
+  resetDenialCount(): void {
+    this.deniedCount = 0;
   }
 
   isActive(): boolean {

@@ -158,10 +158,19 @@ class AudioArmerClass {
     }
 
     try {
+      // Import sanitization from safety module
+      const { sanitizeTTSOutput } = require('../safety/llm_guard');
+      const sanitizedText = sanitizeTTSOutput(text);
+      
+      if (!sanitizedText.trim()) {
+        console.warn('Text was filtered out by safety sanitizer');
+        return;
+      }
+
       // Cancel any ongoing speech
       speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(text);
+      const utterance = new SpeechSynthesisUtterance(sanitizedText);
       utterance.rate = 0.9;
       utterance.pitch = 1.0;
       utterance.volume = 0.8;
@@ -172,13 +181,26 @@ class AudioArmerClass {
       };
 
       utterance.onend = () => {
-        console.log('Speech synthesis completed:', text);
+        console.log('Speech synthesis completed');
       };
 
-      console.log('Announcing text:', text);
       speechSynthesis.speak(utterance);
     } catch (error) {
       console.error('Failed to announce text:', error);
+    }
+  }
+
+  // Watchdog for suspended AudioContext
+  checkContextHealth(): void {
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      console.warn('AudioContext suspended, prompting user');
+      this.announceText('Tap to allow sound');
+      
+      // Show visual prompt if needed
+      const statusEl = document.getElementById('status-announcer');
+      if (statusEl) {
+        statusEl.textContent = 'Audio is blocked. Tap anywhere to enable sound.';
+      }
     }
   }
 
