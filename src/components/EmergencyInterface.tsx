@@ -13,7 +13,11 @@ interface EmergencyContact {
   relationship: string;
 }
 
-const EmergencyInterface = () => {
+interface EmergencyInterfaceProps {
+  onBack?: () => void;
+}
+
+const EmergencyInterface: React.FC<EmergencyInterfaceProps> = ({ onBack }) => {
   const [fallDetected, setFallDetected] = React.useState(false);
   const [countdown, setCountdown] = React.useState(30);
   const [emergencyActive, setEmergencyActive] = React.useState(false);

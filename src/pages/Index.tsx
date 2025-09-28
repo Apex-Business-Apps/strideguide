@@ -9,7 +9,7 @@ import SettingsDashboard from '@/components/SettingsDashboard';
 import LostItemFinder from '@/components/LostItemFinder';
 import VisionPanel from '@/components/VisionPanel';
 import EmergencyInterface from '@/components/EmergencyInterface';
-import PWAInstaller from '@/components/PWAInstaller';
+import { PWAInstaller } from '@/components/PWAInstaller';
 import { AudioArmer } from '@/utils/AudioArmer';
 import { WakeLockManager } from '@/utils/WakeLockManager';
 import { useTranslation } from 'react-i18next';

@@ -13,7 +13,11 @@ interface DetectedHazard {
   confidence: number;
 }
 
-const VisionPanel = () => {
+interface VisionPanelProps {
+  onBack?: () => void;
+}
+
+const VisionPanel: React.FC<VisionPanelProps> = ({ onBack }) => {
   const [isActive, setIsActive] = React.useState(false);
   const [isNightMode, setIsNightMode] = React.useState(false);
   const [isPremium, setIsPremium] = React.useState(false);
