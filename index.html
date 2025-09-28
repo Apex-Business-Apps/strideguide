@@ -2,19 +2,46 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>strideguide-vision</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>StrideGuide - Your seeing-eye assistant</title>
+    <meta name="description" content="Offline-first seeing-eye assistant for seniors & blind users. Real-time obstacle detection, lost item finder, emergency SOS." />
+    <meta name="author" content="StrideGuide Team" />
+    <meta name="theme-color" content="#3730A3" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="StrideGuide" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
 
-    <meta property="og:title" content="strideguide-vision" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <!-- SEO & Social -->
+    <meta property="og:title" content="StrideGuide - Your seeing-eye assistant" />
+    <meta property="og:description" content="Offline-first seeing-eye assistant for seniors & blind users with real-time obstacle detection, lost item finder, and emergency features." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="https://strideguide.app/og-image.png" />
+    <meta property="og:url" content="https://strideguide.app" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:title" content="StrideGuide - Accessibility Assistant" />
+    <meta name="twitter:description" content="Navigate with confidence using offline AI vision assistance" />
+    <meta name="twitter:image" content="https://strideguide.app/og-image.png" />
+    
+    <!-- Security -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: blob:;
+      media-src 'self' blob:;
+      connect-src 'self' blob:;
+      worker-src 'self' blob:;
+      font-src 'self' data:;
+    " />
   </head>
 
   <body>
