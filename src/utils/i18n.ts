@@ -30,16 +30,30 @@ i18n
 // Safe lookup with human fallback
 export function t(key: string, params: Record<string, any> = {}, fallback = "") {
   const dict = resources[i18n.language as keyof typeof resources]?.translation || resources.en.translation;
-  let s = (dict as any)[key] || fallback;
+  
+  // Navigate nested keys like "onboarding.welcome.title"
+  let s = dict;
+  const keyParts = key.split('.');
+  for (const part of keyParts) {
+    if (s && typeof s === 'object' && part in s) {
+      s = (s as any)[part];
+    } else {
+      s = undefined;
+      break;
+    }
+  }
+  
+  // Use the resolved value or fallback
+  let result = (typeof s === 'string' ? s : fallback);
   
   // Simple token replace: {n}, {total}, {time}, {lang}
-  if (s && params) {
+  if (result && params) {
     Object.keys(params).forEach(k => {
-      s = s.replace(new RegExp(`\\{${k}\\}`, 'g'), String(params[k]));
+      result = result.replace(new RegExp(`\\{${k}\\}`, 'g'), String(params[k]));
     });
   }
   
-  return s || `[${key}]`; // last-resort visible bracketed key
+  return result || `[${key}]`; // last-resort visible bracketed key
 }
 
 // Dev-only leak detector
