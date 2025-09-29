@@ -42,4 +42,19 @@ export function t(key: string, params: Record<string, any> = {}, fallback = "") 
   return s || `[${key}]`; // last-resort visible bracketed key
 }
 
+// Dev-only leak detector
+export function assertHumanizedCopy(root = document.body) {
+  if (process?.env?.NODE_ENV === "production") return;
+  const bad: string[] = [];
+  const isKey = (txt: string) => /\b[a-z0-9]+(\.[a-z0-9_]+)+\b/i.test(txt);
+  (function walk(n: Node): void {
+    if (n.nodeType === Node.TEXT_NODE) {
+      const s = n.textContent?.trim();
+      if (s && isKey(s)) bad.push(s);
+    }
+    n.childNodes.forEach(walk);
+  })(root);
+  if (bad.length) console.warn("[i18n] Unresolved keys:", [...new Set(bad)]);
+}
+
 export default i18n;

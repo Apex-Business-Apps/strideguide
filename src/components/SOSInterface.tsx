@@ -15,6 +15,7 @@ export const SOSInterface: React.FC<SOSInterfaceProps> = ({ onBack }) => {
   const [countdown, setCountdown] = useState(3);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [sosTriggered, setSosTriggered] = useState(false);
+  const [lastTriggered, setLastTriggered] = useState<number | null>(null);
   const { t } = useTranslation();
   
   const pressStartTime = useRef<number | null>(null);
@@ -41,6 +42,14 @@ export const SOSInterface: React.FC<SOSInterfaceProps> = ({ onBack }) => {
   }, []);
 
   const startPress = () => {
+    // Check cooldown (15 seconds)
+    if (lastTriggered && Date.now() - lastTriggered < 15000) {
+      if (AudioArmer.isArmed()) {
+        AudioArmer.announceText(t('sos.cooldown', 'Please wait before using SOS again.'));
+      }
+      return;
+    }
+
     setIsPressed(true);
     pressStartTime.current = Date.now();
     
@@ -132,11 +141,12 @@ export const SOSInterface: React.FC<SOSInterfaceProps> = ({ onBack }) => {
     
     setSosTriggered(true);
     setIsCountingDown(false);
+    setLastTriggered(Date.now());
     
     // Play SOS sound
     if (AudioArmer.isArmed()) {
       AudioArmer.playEarcon('warning');
-      AudioArmer.announceText(t('sos.triggered'));
+      AudioArmer.announceText(t('sos.triggered', 'Emergency alert activated'));
     }
     
     // Strong haptic feedback

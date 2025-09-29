@@ -91,5 +91,25 @@
       "title": "C'est parti",
       "content": "Grands boutons. Sons clairs. Hors ligne. Vous pouvez rejouer ce tutoriel dans Réglages."
     }
-  }
+  },
+  
+  "install.available": "Installation disponible",
+  "install.hint": "Installer pour accès hors ligne et démarrage rapide",
+  "install.iosHint": "Ajouter à l'écran d'accueil pour une meilleure expérience",
+  "install.button": "Installer l'app",
+  "install.addToHome": "Ajouter à l'accueil",
+  "install.success": "Succès",
+  "install.installed": "StrideGuide a été installé !",
+  "install.error": "Erreur",
+  "install.failed": "L'installation a échoué. Veuillez réessayer.",
+  
+  "wakeLock.active": "Écran allumé",
+  "wakeLock.inactive": "L'écran peut s'assombrir",
+  
+  "sos.cooldown": "Veuillez attendre avant d'utiliser SOS à nouveau.",
+  "sos.countdownStart": "Relâchez pour annuler dans 3 secondes",
+  "sos.cancelled": "SOS annulé",
+  "sos.triggered": "Alerte d'urgence activée",
+  "sos.messageTemplate": "URGENCE: J'ai besoin d'aide. Heure: {timestamp}. Lieu: {location}",
+  "sos.locationPlaceholder": "Services de localisation indisponibles"
 }

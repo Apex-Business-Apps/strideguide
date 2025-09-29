@@ -8,4 +8,8 @@ import "./utils/i18n";
 import "./utils/ComponentTester";
 import "./utils/SystemReliabilityTester";
 
+// Initialize core managers
+import "./utils/InstallManager";
+import "./utils/AudioArmer";
+
 createRoot(document.getElementById("root")!).render(<App />);

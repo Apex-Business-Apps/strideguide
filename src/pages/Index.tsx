@@ -11,12 +11,14 @@ import VisionPanel from '@/components/VisionPanel';
 import { PWAInstaller } from '@/components/PWAInstaller';
 import { SOSInterface } from '@/components/SOSInterface';
 import { OnboardingTutorial } from '@/components/OnboardingTutorial';
+import { WakeLockIndicator } from '@/components/WakeLockIndicator';
 import { AudioArmer } from '@/utils/AudioArmer';
 import { WakeLockManager } from '@/utils/WakeLockManager';
 import { BatteryGuard } from '@/utils/BatteryGuard';
 import { HealthManager } from '@/utils/HealthManager';
 import { SOSGuard } from '@/utils/SOSGuard';
 import { useTranslation } from 'react-i18next';
+import { assertHumanizedCopy } from '@/utils/i18n';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<'home' | 'guidance' | 'finder' | 'sos' | 'settings'>('home');
@@ -47,6 +49,11 @@ const Index = () => {
         });
       }
     });
+
+    // Dev-only: Check for unresolved i18n keys
+    if (process.env.NODE_ENV === 'development') {
+      setTimeout(() => assertHumanizedCopy(), 1000);
+    }
 
     return () => {
       unsubscribe();
@@ -381,12 +388,13 @@ const Index = () => {
             </div>
           )}
 
-          {/* Guidance Status */}
+          {/* Guidance Status & Wake Lock */}
           {isGuidanceActive && (
-            <div className="text-center">
+            <div className="text-center space-y-2">
               <Badge variant="secondary" className="text-xs">
                 {t('guidance.active')}
               </Badge>
+              <WakeLockIndicator />
             </div>
           )}
         </div>
@@ -396,6 +404,14 @@ const Index = () => {
           <p>{t('footer.builtin')} • {t('footer.privacy')} • {t('footer.offline')}</p>
           <p className="text-xs">{t('footer.version', { version: '1.0.0' })}</p>
         </div>
+
+        {/* Aria-live region for status announcements */}
+        <div 
+          id="status-announcer" 
+          aria-live="polite" 
+          aria-atomic="true" 
+          className="sr-only"
+        />
       </div>
     </div>
   );

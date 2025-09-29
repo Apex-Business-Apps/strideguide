@@ -203,5 +203,25 @@
       "title": "You're ready",
       "content": "Big buttons. Clear sounds. Works offline. You can replay this tutorial anytime in Settings."
     }
-  }
+  },
+  
+  "install.available": "Install available",
+  "install.hint": "Install for offline access and faster startup",
+  "install.iosHint": "Add to Home Screen for best experience",
+  "install.button": "Install App",
+  "install.addToHome": "Add to Home",
+  "install.success": "Success",
+  "install.installed": "StrideGuide has been installed!",
+  "install.error": "Error",
+  "install.failed": "Installation failed. Please try again.",
+  
+  "wakeLock.active": "Screen awake",
+  "wakeLock.inactive": "Screen may dim",
+  
+  "sos.cooldown": "Please wait before using SOS again.",
+  "sos.countdownStart": "Release to cancel in 3 seconds",
+  "sos.cancelled": "SOS cancelled",
+  "sos.triggered": "Emergency alert activated",
+  "sos.messageTemplate": "EMERGENCY: I need help. Time: {timestamp}. Location: {location}",
+  "sos.locationPlaceholder": "Location services unavailable"
 }

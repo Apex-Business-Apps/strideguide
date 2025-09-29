@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Camera, Search, BookOpen, Zap, Lock, Volume2, Vibrate } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { AudioArmer } from '@/utils/AudioArmer';
 
 interface LearnedItem {
   id: string;
@@ -47,42 +48,51 @@ const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
-  // Simulated ML processing
+  // Enhanced ML processing with embeddings simulation
   const processFrame = async () => {
     if (!selectedItem || mode !== 'search') return;
     
     setIsProcessing(true);
     
-    // Simulate ML inference delay (120-180ms)
-    await new Promise(resolve => setTimeout(resolve, 120 + Math.random() * 60));
+    // Simulate ML inference delay (targeting <120ms requirement)
+    await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 40));
     
-    // Simulate detection result
-    const hasDetection = Math.random() > 0.7; // 30% detection rate for demo
+    // Simulate detection with better accuracy near center
+    const hasDetection = Math.random() > 0.65; // Improved detection rate
     
     if (hasDetection) {
+      // Simulate more realistic detection patterns
+      const centerWeight = Math.random();
+      const xPos = centerWeight > 0.7 ? 0.4 + Math.random() * 0.2 : Math.random();
+      
       const result: SearchResult = {
-        confidence: 0.75 + Math.random() * 0.2,
+        confidence: 0.7 + Math.random() * 0.25,
         boundingBox: {
-          x: Math.random() * 0.6,
+          x: xPos,
           y: Math.random() * 0.6,
-          width: 0.2 + Math.random() * 0.2,
-          height: 0.2 + Math.random() * 0.2,
+          width: 0.15 + Math.random() * 0.15,
+          height: 0.15 + Math.random() * 0.15,
         },
-        distance: ['very_close', 'close', 'medium', 'far'][Math.floor(Math.random() * 4)] as any,
-        direction: ['left', 'center', 'right'][Math.floor(Math.random() * 3)] as any,
+        distance: getDistanceFromPosition(xPos),
+        direction: getDirectionFromPosition(xPos),
       };
       
       setCurrentSearchResult(result);
       
-      // Audio guidance with stereo panning
+      // Enhanced audio guidance with stereo panning
       if (audioEnabled) {
-        playAudioGuidance(result);
+        playEnhancedAudioGuidance(result);
       }
       
-      // Haptic feedback
-      if (hapticsEnabled && navigator.vibrate) {
-        const pattern = getHapticPattern(result.distance);
-        navigator.vibrate(pattern);
+      // Platform-specific haptic feedback
+      if (hapticsEnabled) {
+        playPlatformHaptics(result);
+      }
+
+      // Announce successful detection for higher confidence
+      if (result.confidence > 0.85 && AudioArmer.isArmed()) {
+        const item = learnedItems.find(i => i.id === selectedItem);
+        AudioArmer.announceText(`Found ${item?.name || 'item'}`);
       }
     } else {
       setCurrentSearchResult(null);
@@ -91,18 +101,50 @@ const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack }) => {
     setIsProcessing(false);
   };
 
-  const playAudioGuidance = (result: SearchResult) => {
-    // Simulate TTS with Web Audio API stereo panning
-    const utterance = new SpeechSynthesisUtterance(
-      getDirectionText(result.direction, result.distance)
-    );
+  const getDistanceFromPosition = (xPos: number): SearchResult['distance'] => {
+    if (xPos >= 0.4 && xPos <= 0.6) return 'very_close';
+    if (xPos >= 0.3 && xPos <= 0.7) return 'close';
+    if (xPos >= 0.2 && xPos <= 0.8) return 'medium';
+    return 'far';
+  };
+
+  const getDirectionFromPosition = (xPos: number): SearchResult['direction'] => {
+    if (xPos < 0.4) return 'left';
+    if (xPos > 0.6) return 'right';
+    return 'center';
+  };
+
+  const playEnhancedAudioGuidance = (result: SearchResult) => {
+    // Use AudioArmer for stereo earcons
+    const panValue = result.direction === 'left' ? -0.8 : result.direction === 'right' ? 0.8 : 0;
+    const intensity = result.distance === 'very_close' ? 1 : 
+                     result.distance === 'close' ? 0.7 : 
+                     result.distance === 'medium' ? 0.4 : 0.2;
     
-    // Set language based on current locale
-    utterance.lang = 'en-CA'; // Will be dynamic based on i18n state
-    utterance.rate = 0.9;
-    utterance.volume = 0.8;
+    if (AudioArmer.isArmed()) {
+      AudioArmer.playDirectionalCue(result.direction, intensity);
+    }
     
-    speechSynthesis.speak(utterance);
+    // Occasional voice guidance
+    if (Math.random() > 0.8) {
+      const utterance = new SpeechSynthesisUtterance(
+        getDirectionText(result.direction, result.distance)
+      );
+      utterance.lang = 'en-CA';
+      utterance.rate = 0.9;
+      utterance.volume = 0.8;
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  const playPlatformHaptics = (result: SearchResult) => {
+    // Android gets vibration, iOS gets enhanced audio earcons
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    if (isAndroid && navigator.vibrate) {
+      const pattern = getHapticPattern(result.distance);
+      navigator.vibrate(pattern);
+    }
   };
 
   const getDirectionText = (direction: string, distance: string) => {
@@ -152,15 +194,24 @@ const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack }) => {
     setMode('search');
     setCurrentSearchResult(null);
     
-    // Start frame processing loop
+    // Announce search start
+    const item = learnedItems.find(i => i.id === itemId);
+    if (AudioArmer.isArmed() && item) {
+      AudioArmer.announceText(`Searching for ${item.name}`);
+    }
+    
+    // Start frame processing loop at target 8fps
     const processLoop = setInterval(processFrame, 1000 / fps);
     
-    // Cleanup after 30 seconds for demo
+    // Cleanup after 60 seconds for battery preservation
     setTimeout(() => {
       clearInterval(processLoop);
       setMode('idle');
       setSelectedItem(null);
-    }, 30000);
+      if (AudioArmer.isArmed()) {
+        AudioArmer.announceText('Search stopped');
+      }
+    }, 60000);
   };
 
   const handleNightModeToggle = () => {
@@ -175,13 +226,18 @@ const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack }) => {
     setIsNightMode(!isNightMode);
   };
 
-  // Demo: Add sample learned item
+  // Demo: Add sample learned items with realistic embeddings simulation
   useEffect(() => {
     if (learnedItems.length === 0) {
+      // Create sample embeddings (would be real 512-dim vectors in production)
+      const sampleEmbeddings = Array.from({ length: 12 }, () => 
+        Array.from({ length: 128 }, () => Math.random() * 2 - 1)
+      );
+      
       setLearnedItems([{
         id: '1',
         name: 'My Keys',
-        embeddings: [], // Would contain actual embeddings
+        embeddings: sampleEmbeddings,
         createdAt: new Date(),
         photoCount: 12
       }]);

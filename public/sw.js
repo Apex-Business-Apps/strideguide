@@ -6,36 +6,38 @@ const CACHE_VERSION = 2;
 
 // Allowlisted paths for caching (deny-by-default security)
 const ALLOWED_CACHE_PATHS = [
-  // Core app files
+  // Core app files (GET-only)
   /^\/$/,
   /^\/index\.html$/,
   /^\/manifest\.json$/,
+  /^\/sw\.js$/,
   
-  // Built assets (Vite patterns)
-  /^\/assets\/.*\.(js|css|woff2?|ttf|eot)$/,
-  /^\/src\/.*\.(js|ts|tsx|css)$/,
+  // Built assets (Vite patterns) - static resources only
+  /^\/assets\/.*\.(js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|webp)$/,
   
-  // Icons and images
+  // Icons and images (specific patterns)
   /^\/icon-\d+\.png$/,
   /^\/favicon\.ico$/,
-  /^\/icons\//,
+  /^\/icons\/.*\.(png|svg|ico)$/,
   
-  // Audio assets (earcons, TTS)
-  /^\/audio\//,
-  /^\/earcons\//,
+  // Audio assets (earcons, TTS) - production ready
+  /^\/audio\/.*\.(mp3|wav|ogg)$/,
+  /^\/earcons\/.*\.(mp3|wav|ogg)$/,
   
-  // ML models and data
-  /^\/models\//,
-  /^\/ml\//,
+  // ML models and data (offline inference)
+  /^\/models\/.*\.(onnx|json|bin)$/,
+  /^\/ml\/.*\.(onnx|json|bin)$/,
   
-  // Static assets
-  /^\/static\//
+  // Static assets (allowed extensions only)
+  /^\/static\/.*\.(png|jpg|jpeg|svg|css|js|woff2?|ttf|eot)$/
 ];
 
 // Network-first allowlist (for essential runtime requests)
 const NETWORK_FIRST_PATHS = [
   /^\/api\//,
-  /^\/supabase\//
+  /^\/supabase\//,
+  /^https:\/\/.*\.supabase\.co\//,
+  /^https:\/\/api\.elevenlabs\.io\//
 ];
 
 // Install event - precache core assets

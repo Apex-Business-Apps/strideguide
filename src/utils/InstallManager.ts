@@ -184,6 +184,14 @@ class InstallManagerClass {
     }
   }
 
+  markDismissed(): void {
+    // For iOS, we can store dismissal preference
+    const timestamp = Date.now();
+    localStorage.setItem('strideguide_install_dismissed', timestamp.toString());
+    this.currentState.canInstall = false;
+    this.notifyListeners();
+  }
+
   // For debugging
   getDebugInfo(): Record<string, any> {
     return {
