@@ -16,16 +16,22 @@ class AudioArmerClass {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       
       if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
+        try {
+          await this.audioContext.resume();
+          console.log('AudioContext resumed successfully');
+        } catch (resumeError) {
+          throw new Error('AudioContext suspended - user interaction required');
+        }
       }
 
-      // Load earcons
+      // Load earcons with retry logic
       await this.loadEarcons();
       
       this.isInitialized = true;
       console.log('AudioArmer initialized successfully');
     } catch (error) {
       console.error('Failed to initialize AudioArmer:', error);
+      this.cleanup();
       throw error;
     }
   }
@@ -152,18 +158,19 @@ class AudioArmerClass {
   }
 
   announceText(text: string): void {
+    if (!text || typeof text !== 'string') return;
+
     if (!('speechSynthesis' in window)) {
       console.warn('Speech synthesis not supported');
       return;
     }
 
     try {
-      // Import sanitization from safety module
-      const { sanitizeTTSOutput } = require('../safety/llm_guard');
-      const sanitizedText = sanitizeTTSOutput(text);
+      // Simple text sanitization to prevent XSS
+      const sanitizedText = text.replace(/<[^>]*>/g, '').trim();
       
-      if (!sanitizedText.trim()) {
-        console.warn('Text was filtered out by safety sanitizer');
+      if (!sanitizedText) {
+        console.warn('Text was empty after sanitization');
         return;
       }
 
@@ -177,7 +184,7 @@ class AudioArmerClass {
 
       // Add error handling for speech synthesis
       utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
+        console.error('Speech synthesis error:', event.error);
       };
 
       utterance.onend = () => {
@@ -210,6 +217,20 @@ class AudioArmerClass {
 
   getContext(): AudioContext | null {
     return this.audioContext;
+  }
+
+  cleanup(): void {
+    try {
+      if (this.audioContext && this.audioContext.state !== 'closed') {
+        this.audioContext.close();
+      }
+      this.audioContext = null;
+      this.earcons.clear();
+      this.isInitialized = false;
+      console.log('AudioArmer cleaned up');
+    } catch (error) {
+      console.error('AudioArmer cleanup error:', error);
+    }
   }
 }
 

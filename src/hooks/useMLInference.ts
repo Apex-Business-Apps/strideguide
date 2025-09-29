@@ -33,30 +33,51 @@ export const useMLInference = () => {
   const embedderRef = useRef<Pipeline | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Initialize models
+  // Initialize models with enhanced error handling
   useEffect(() => {
     const initModels = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
+        // Check for required browser features
+        if (!('OffscreenCanvas' in window) && !document.createElement('canvas').getContext) {
+          throw new Error('Canvas not supported');
+        }
+
         // Create canvas for image processing
         const canvas = document.createElement('canvas');
         canvas.width = 416;
         canvas.height = 416;
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          throw new Error('Canvas 2D context not available');
+        }
+
         canvasRef.current = canvas;
 
         // Initialize object detection model (simulated for now)
         // In production, use: 'facebook/detr-resnet-50' or custom ONNX model
         console.log('Initializing ML models...');
         
-        // Simulate model loading delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Check WebGL availability for future GPU acceleration
+        const testCanvas = document.createElement('canvas');
+        const webglContext = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+        if (webglContext) {
+          console.log('WebGL available for ML acceleration');
+        } else {
+          console.warn('WebGL not available, using CPU fallback');
+        }
+        
+        // Simulate model loading with realistic delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
         setIsInitialized(true);
         console.log('ML models initialized successfully');
       } catch (err) {
-        setError(`Failed to initialize ML models: ${err}`);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        setError(`Failed to initialize ML models: ${errorMessage}`);
         console.error('ML initialization error:', err);
       } finally {
         setIsLoading(false);

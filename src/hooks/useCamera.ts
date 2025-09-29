@@ -32,7 +32,7 @@ export const useCamera = (config: CameraConfig) => {
     try {
       setError(null);
       
-      const constraints: MediaStreamConstraints = {
+      let constraints: MediaStreamConstraints = {
         video: {
           width: { ideal: config.width },
           height: { ideal: config.height },
@@ -42,7 +42,18 @@ export const useCamera = (config: CameraConfig) => {
         audio: false
       };
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (constraintError) {
+        console.warn('Failed with ideal constraints, trying basic:', constraintError);
+        // Fallback to basic constraints
+        constraints = {
+          video: { facingMode: config.facingMode },
+          audio: false
+        };
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      }
       streamRef.current = stream;
 
       // Create video element if it doesn't exist
@@ -66,6 +77,13 @@ export const useCamera = (config: CameraConfig) => {
       }
 
       videoRef.current.srcObject = stream;
+      
+      // Add error handling for video element
+      videoRef.current.onerror = (videoError) => {
+        console.error('Video element error:', videoError);
+        setError('Video playback error');
+      };
+
       await videoRef.current.play();
       
       setIsActive(true);
@@ -106,8 +124,23 @@ export const useCamera = (config: CameraConfig) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    if (!ctx || video.videoWidth === 0 || video.videoHeight === 0) {
+    if (!ctx) {
       return null;
+    }
+
+    // Ensure valid video dimensions
+    const videoWidth = video.videoWidth || config.width;
+    const videoHeight = video.videoHeight || config.height;
+    
+    if (videoWidth === 0 || videoHeight === 0) {
+      console.warn('Invalid video dimensions');
+      return null;
+    }
+
+    // Update canvas size if needed
+    if (canvas.width !== videoWidth || canvas.height !== videoHeight) {
+      canvas.width = videoWidth;
+      canvas.height = videoHeight;
     }
 
     // Draw video frame to canvas

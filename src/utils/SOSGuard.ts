@@ -56,12 +56,14 @@ class SOSGuardClass {
     
     this.callbacks.onStart?.();
     
-    // Start progress updates
+    // Start progress updates with safety checks
     this.startProgressUpdates();
     
     // Set timer for trigger
     this.holdTimer = setTimeout(() => {
-      this.triggerSOS();
+      if (this.isPressed) { // Safety check
+        this.triggerSOS();
+      }
     }, this.requiredHoldTime);
 
     return true;
