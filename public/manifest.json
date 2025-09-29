@@ -1,7 +1,7 @@
 {
   "name": "StrideGuide",
-  "short_name": "StrideGuide",
-  "description": "Your seeing-eye assistant in your pocket",
+  "short_name": "StrideGuide", 
+  "description": "Your seeing-eye assistant in your pocket. Visual guidance for seniors and blind users, works offline with English and French support.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0B0F14",
@@ -21,6 +21,20 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile-1080x1920.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshot-desktop-1920x1080.png", 
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
     }
   ],
   "shortcuts": [

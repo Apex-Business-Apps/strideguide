@@ -18,7 +18,7 @@ import { BatteryGuard } from '@/utils/BatteryGuard';
 import { HealthManager } from '@/utils/HealthManager';
 import { SOSGuard } from '@/utils/SOSGuard';
 import { useTranslation } from 'react-i18next';
-import { assertHumanizedCopy } from '@/utils/i18n';
+import { assertHumanizedCopy } from '@/utils/i18nGuard';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<'home' | 'guidance' | 'finder' | 'sos' | 'settings'>('home');
@@ -27,7 +27,7 @@ const Index = () => {
   const [currentLanguage, setCurrentLanguage] = useState<'en' | 'fr'>('en');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { toast } = useToast();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['common', 'home']);
 
   // Initialize security guards and check onboarding
   useEffect(() => {
@@ -44,7 +44,7 @@ const Index = () => {
     const unsubscribe = HealthManager.onHealthChange((status) => {
       if (status.overall === 'critical') {
         toast({
-          title: t('errors.systemCritical'),
+          title: t('errors.systemCritical', { defaultValue: 'System critical error' }),
           variant: 'destructive',
         });
       }
@@ -68,12 +68,12 @@ const Index = () => {
         setAudioArmed(true);
         console.log('Audio system armed successfully');
         toast({
-          title: t('guidance.arming'),
+          title: t('guidance.arming', { defaultValue: 'Audio ready. I will guide you after a tap.' }),
         });
       } catch (error) {
         console.error('Failed to arm audio:', error);
         toast({
-          title: t('errors.audio'),
+          title: t('common:audio.tapToArm', { defaultValue: 'Tap once to allow sound' }),
           variant: 'destructive',
         });
       }
@@ -92,16 +92,16 @@ const Index = () => {
       // Announce language change via dedicated aria-live region
       const announcer = document.getElementById('status-announcer');
       if (announcer) {
-        announcer.textContent = t('lang.changed', { lang: newLang === 'en' ? 'English' : 'français' });
+        announcer.textContent = t('lang.changed', { lang: newLang === 'en' ? 'English' : 'français', defaultValue: 'Language changed to {lang}' });
       }
       
       toast({
-        title: t('lang.changed', { lang: newLang === 'en' ? 'English' : 'français' }),
+        title: t('lang.changed', { lang: newLang === 'en' ? 'English' : 'français', defaultValue: 'Language changed to {lang}' }),
       });
     } catch (error) {
       console.error('Failed to change language:', error);
       toast({
-        title: t('errors.generic'),
+        title: t('errors.generic', { defaultValue: 'Something went wrong. Please try again.' }),
         variant: 'destructive',
       });
     }
@@ -141,7 +141,7 @@ const Index = () => {
         }
         
         toast({
-          title: t('guidance.active'),
+          title: t('guidance.active', { defaultValue: 'Guidance active' }),
         });
       } else {
         console.log('Stopping guidance mode...');
@@ -167,13 +167,13 @@ const Index = () => {
         }
         
         toast({
-          title: t('guidance.paused'),
+          title: t('guidance.paused', { defaultValue: 'Guidance paused' }),
         });
       }
     } catch (error) {
       console.error('Error in guidance toggle:', error);
       toast({
-        title: t('errors.generic'),
+        title: t('errors.generic', { defaultValue: 'Something went wrong. Please try again.' }),
         variant: 'destructive',
       });
     }
@@ -209,7 +209,7 @@ const Index = () => {
     } catch (error) {
       console.error('Error starting item finder:', error);
       toast({
-        title: t('errors.generic'),
+        title: t('errors.generic', { defaultValue: 'Something went wrong. Please try again.' }),
         variant: 'destructive',
       });
     }
@@ -298,22 +298,22 @@ const Index = () => {
                 size="sm"
                 onClick={toggleLanguage}
                 className="min-h-[44px] px-3"
-                aria-label={t('lang.toggle')}
+                aria-label={t('lang.toggle', { defaultValue: 'EN / FR' })}
               >
                 <Languages className="h-4 w-4 mr-1" />
-                {t('lang.current')}
+                {t('lang.current', { defaultValue: currentLanguage.toUpperCase() })}
               </Button>
             </div>
           </div>
           
           <p className="text-lg text-muted-foreground max-w-sm mx-auto leading-relaxed">
-            {t('app.tagline')}
+            {t('app.tagline', { defaultValue: 'Your visual guidance assistant, in your pocket.' })}
           </p>
           
           <div className="flex justify-center gap-2 flex-wrap">
-            <Badge variant="secondary">{t('app.badges.bilingual')}</Badge>
-            <Badge variant="secondary">{t('app.badges.offline')}</Badge>
-            <Badge variant="secondary">{t('app.badges.privacy')}</Badge>
+            <Badge variant="secondary">{t('app.badges.bilingual', { defaultValue: 'English • French' })}</Badge>
+            <Badge variant="secondary">{t('app.badges.offline', { defaultValue: 'Works offline' })}</Badge>
+            <Badge variant="secondary">{t('app.badges.privacy', { defaultValue: 'Privacy first' })}</Badge>
           </div>
           
           {/* Usage Meter */}
@@ -330,11 +330,11 @@ const Index = () => {
                 ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
                 : 'bg-primary hover:bg-primary/90 text-primary-foreground'
             }`}
-            aria-label={isGuidanceActive ? t('guidance.stop') : t('guidance.start')}
+            aria-label={isGuidanceActive ? t('home:guidance.stop', { defaultValue: 'Stop Guidance' }) : t('home:guidance.start', { defaultValue: 'Start Guidance' })}
             role="button"
           >
             <Eye className="mr-3 h-6 w-6" />
-            {isGuidanceActive ? t('guidance.stop') : t('guidance.start')}
+            {isGuidanceActive ? t('home:guidance.stop', { defaultValue: 'Stop Guidance' }) : t('home:guidance.start', { defaultValue: 'Start Guidance' })}
           </Button>
 
           {/* Find Lost Item */}
@@ -342,11 +342,11 @@ const Index = () => {
             onClick={handleFindItem}
             variant="outline"
             className="w-full min-h-[60px] text-lg font-semibold"
-            aria-label={t('finder.title')}
+            aria-label={t('home:finder.title', { defaultValue: 'Lost Item Finder' })}
             role="button"
           >
             <Search className="mr-3 h-6 w-6" />
-            {t('finder.title')}
+            {t('home:finder.title', { defaultValue: 'Lost Item Finder' })}
           </Button>
 
           {/* Emergency SOS */}
@@ -354,11 +354,11 @@ const Index = () => {
             onClick={handleSOSPress}
             variant="destructive"
             className="w-full min-h-[60px] text-lg font-semibold"
-            aria-label={t('sos.title')}
+            aria-label={t('home:sos.title', { defaultValue: 'SOS (hold)' })}
             role="button"
           >
             <AlertTriangle className="mr-3 h-6 w-6" />
-            {t('sos.title')}
+            {t('home:sos.title', { defaultValue: 'SOS (hold)' })}
           </Button>
 
           {/* Settings */}
@@ -366,11 +366,11 @@ const Index = () => {
             onClick={handleSettings}
             variant="outline"
             className="w-full min-h-[60px] text-lg font-semibold"
-            aria-label={t('settings.title')}
+            aria-label={t('common:settings.title', { defaultValue: 'Settings' })}
             role="button"
           >
             <Settings className="mr-3 h-6 w-6" />
-            {t('settings.title')}
+            {t('common:settings.title', { defaultValue: 'Settings' })}
           </Button>
         </div>
 
@@ -383,7 +383,7 @@ const Index = () => {
           {!audioArmed && (
             <div className="text-center">
               <Badge variant="outline" className="text-xs">
-                {t('audio.tapToArm')}
+                {t('common:audio.tapToArm', { defaultValue: 'Tap once to allow sound' })}
               </Badge>
             </div>
           )}
@@ -392,7 +392,7 @@ const Index = () => {
           {isGuidanceActive && (
             <div className="text-center space-y-2">
               <Badge variant="secondary" className="text-xs">
-                {t('guidance.active')}
+                {t('guidance.active', { defaultValue: 'Guidance active' })}
               </Badge>
               <WakeLockIndicator />
             </div>
@@ -401,8 +401,8 @@ const Index = () => {
 
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground space-y-2 pt-4">
-          <p>{t('footer.builtin')} • {t('footer.privacy')} • {t('footer.offline')}</p>
-          <p className="text-xs">{t('footer.version', { version: '1.0.0' })}</p>
+          <p>{t('footer.builtin', { defaultValue: 'Built in Canada' })} • {t('footer.privacy', { defaultValue: 'Privacy first' })} • {t('footer.offline', { defaultValue: 'Works offline' })}</p>
+          <p className="text-xs">{t('footer.version', { version: '1.0.0', defaultValue: 'Version {version}' })}</p>
         </div>
 
         {/* Aria-live region for status announcements */}
