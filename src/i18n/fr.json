@@ -58,5 +58,38 @@
 
   "errors.camera": "Caméra indisponible. Vérifiez l'autorisation.",
   "errors.audio": "Audio indisponible. Touchez une fois pour autoriser le son.",
-  "errors.generic": "Un problème est survenu. Réessayez."
+  "errors.generic": "Un problème est survenu. Réessayez.",
+
+  "onboarding": {
+    "step": "{n} sur {total}",
+    "next": "Suivant",
+    "previous": "Retour",
+    "skip": "Passer le tutoriel",
+    "playAudio": "Écouter ce message",
+    "finish": "Terminer",
+    "welcome": {
+      "title": "Bienvenue dans StrideGuide",
+      "content": "Je vous guide avec des sons courts et des instructions claires. J'opère hors ligne, en anglais ou en français."
+    },
+    "perms": {
+      "title": "Autoriser la caméra et le son",
+      "content": "La caméra m'aide à voir les obstacles. Touchez une fois pour autoriser le son afin que je puisse parler et biper."
+    },
+    "start": {
+      "title": "Démarrer & Arrêter",
+      "content": "Touchez le grand bouton Démarrer pour lancer le guidage. Touchez encore pour arrêter. Vous entendrez des bips après l'autorisation du son."
+    },
+    "finder": {
+      "title": "Retrouver vos objets",
+      "content": "Enseignez-moi vos clés avec quelques photos. Je biperai plus vite et dirai « Clés trouvées » lorsqu'elles seront centrées."
+    },
+    "sos": {
+      "title": "Aide SOS",
+      "content": "Maintenez le bouton SOS pendant 1 seconde. Relâchez pour annuler. J'ouvrirai un SMS à votre contact d'urgence."
+    },
+    "done": {
+      "title": "C'est parti",
+      "content": "Grands boutons. Sons clairs. Hors ligne. Vous pouvez rejouer ce tutoriel dans Réglages."
+    }
+  }
 }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Square, Volume2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Volume2, SkipForward, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AudioArmer } from '@/utils/AudioArmer';
+import { t } from '@/utils/i18n';
+import { assertHumanizedCopy } from '@/utils/i18nGuard';
 
 interface OnboardingTutorialProps {
   onComplete: () => void;
@@ -12,69 +14,86 @@ interface OnboardingTutorialProps {
 
 export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete, onSkip }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const { t, i18n } = useTranslation();
-
+  
   const steps = [
     {
-      title: t('onboarding.welcome.title'),
-      content: t('onboarding.welcome.content'),
-      audio: t('onboarding.welcome.audio'),
-      action: 'listen'
+      titleKey: "onboarding.welcome.title",
+      contentKey: "onboarding.welcome.content",
+      audio: "welcome-intro",
+      action: "tap-to-continue"
     },
     {
-      title: t('onboarding.startStop.title'),
-      content: t('onboarding.startStop.content'), 
-      audio: t('onboarding.startStop.audio'),
-      action: 'demo'
+      titleKey: "onboarding.perms.title",
+      contentKey: "onboarding.perms.content",
+      audio: "permissions-request",
+      action: "enable-permissions"
     },
     {
-      title: t('onboarding.audio.title'),
-      content: t('onboarding.audio.content'),
-      audio: t('onboarding.audio.audio'),
-      action: 'earcon'
+      titleKey: "onboarding.start.title",
+      contentKey: "onboarding.start.content",
+      audio: "guidance-controls",
+      action: "demo-start-stop"
     },
     {
-      title: t('onboarding.sos.title'),
-      content: t('onboarding.sos.content'),
-      audio: t('onboarding.sos.audio'),
-      action: 'warning'
+      titleKey: "onboarding.finder.title",
+      contentKey: "onboarding.finder.content",
+      audio: "item-finder-demo",
+      action: "demo-finder"
     },
     {
-      title: t('onboarding.complete.title'),
-      content: t('onboarding.complete.content'),
-      audio: t('onboarding.complete.audio'),
-      action: 'finish'
+      titleKey: "onboarding.sos.title",
+      contentKey: "onboarding.sos.content",
+      audio: "emergency-demo",
+      action: "demo-sos"
+    },
+    {
+      titleKey: "onboarding.done.title",
+      contentKey: "onboarding.done.content",
+      audio: "tutorial-complete",
+      action: "finish"
     }
   ];
 
-  const currentStepData = steps[currentStep];
-
+  // Auto-play audio for first step and run i18n guard
   useEffect(() => {
-    // Auto-start first step audio
-    if (currentStep === 0 && AudioArmer.isArmed()) {
-      playStepAudio();
+    if (currentStep === 0) {
+      setTimeout(() => {
+        playStepAudio(0);
+      }, 500);
+    }
+    
+    // Run i18n guard in development
+    if (import.meta.env.DEV) {
+      setTimeout(() => assertHumanizedCopy(), 100);
     }
   }, [currentStep]);
 
-  const playStepAudio = () => {
-    if (!AudioArmer.isArmed()) return;
-    
-    setIsPlaying(true);
-    
-    // Play earcon first
-    if (currentStepData.action === 'earcon') {
-      AudioArmer.playEarcon('start');
-      setTimeout(() => AudioArmer.playEarcon('success'), 800);
-    } else if (currentStepData.action === 'warning') {
-      AudioArmer.playEarcon('warning');
+  const playStepAudio = async (stepIndex: number) => {
+    try {
+      if (!AudioArmer.isArmed()) {
+        await AudioArmer.initialize();
+      }
+      
+      // Play a gentle earcon to indicate step start
+      AudioArmer.playEarcon('step-start');
+      
+      // Announce the step content
+      const step = steps[stepIndex];
+      const title = t(step.titleKey, {}, step.titleKey);
+      const content = t(step.contentKey, {}, step.contentKey);
+      const announcement = `${title}. ${content}`;
+      
+      setTimeout(() => {
+        AudioArmer.announceText(announcement);
+      }, 300);
+      
+    } catch (error) {
+      console.warn('Audio playback failed:', error);
+      // Fallback announcement for suspended context
+      if (error instanceof Error && error.message.includes('suspended')) {
+        AudioArmer.announceText("Tap once to allow sound");
+      }
     }
-    
-    // Then speak the content
-    setTimeout(() => {
-      AudioArmer.announceText(currentStepData.audio);
-      setIsPlaying(false);
-    }, currentStepData.action === 'earcon' ? 1500 : 300);
   };
 
   const nextStep = () => {
@@ -98,97 +117,88 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
     onSkip();
   };
 
+  const currentStepData = steps[currentStep];
+  const progress = ((currentStep + 1) / steps.length) * 100;
+
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md mx-auto p-6 space-y-6">
-        {/* Progress indicator */}
-        <div className="flex justify-center space-x-2">
-          {steps.map((_, index) => (
-            <div
-              key={index}
-              className={`w-3 h-3 rounded-full ${
-                index === currentStep 
-                  ? 'bg-primary' 
-                  : index < currentStep 
-                    ? 'bg-primary/60' 
-                    : 'bg-muted'
-              }`}
-              aria-label={`Step ${index + 1} ${index <= currentStep ? 'completed' : 'upcoming'}`}
-            />
-          ))}
-        </div>
+      {/* ARIA live region for step announcements */}
+      <div 
+        aria-live="polite" 
+        aria-atomic="true"
+        className="sr-only"
+        key={currentStep}
+      >
+        {t("onboarding.step", { n: currentStep + 1, total: steps.length }, `${currentStep + 1} of ${steps.length}`)}
+      </div>
+      
+      <Card className="w-full max-w-md mx-auto">
+        <CardContent className="p-6">
+          {/* Progress indicator */}
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-muted-foreground">
+                {t("onboarding.step", { n: currentStep + 1, total: steps.length }, `Step ${currentStep + 1} of ${steps.length}`)}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={skipTutorial}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <SkipForward className="h-4 w-4 mr-1" />
+                {t("onboarding.skip", {}, "Skip")}
+              </Button>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
 
-        {/* Step content */}
-        <div className="text-center space-y-4">
-          <h2 className="text-xl font-semibold">{currentStepData.title}</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            {currentStepData.content}
-          </p>
-        </div>
+          {/* Step content */}
+          <div className="mb-6 text-center">
+            <h2 className="text-xl font-semibold mb-3 text-foreground">
+              {t(currentStepData.titleKey, {}, currentStepData.titleKey)}
+            </h2>
+            <p className="text-muted-foreground leading-relaxed">
+              {t(currentStepData.contentKey, {}, currentStepData.contentKey)}
+            </p>
+          </div>
 
-        {/* Audio controls */}
-        <div className="flex justify-center">
-          <Button
-            onClick={playStepAudio}
-            disabled={!AudioArmer.isArmed() || isPlaying}
-            variant="outline"
-            className="min-h-[44px] px-6"
-            aria-label={isPlaying ? t('onboarding.playing') : t('onboarding.playAudio')}
-          >
-            {isPlaying ? (
-              <Square className="h-5 w-5 mr-2" />
-            ) : (
-              <Volume2 className="h-5 w-5 mr-2" />
-            )}
-            {isPlaying ? t('onboarding.playing') : t('onboarding.playAudio')}
-          </Button>
-        </div>
-
-        {/* Navigation buttons */}
-        <div className="flex justify-between items-center pt-4">
-          <Button
-            onClick={prevStep}
-            disabled={currentStep === 0}
-            variant="outline"
-            className="min-h-[44px]"
-            aria-label={t('onboarding.previous')}
-          >
-            {t('onboarding.previous')}
-          </Button>
-
-          <Button
-            onClick={skipTutorial}
-            variant="ghost"
-            className="min-h-[44px] text-muted-foreground"
-            aria-label={t('onboarding.skip')}
-          >
-            {t('onboarding.skip')}
-          </Button>
-
-          <Button
-            onClick={nextStep}
-            className="min-h-[44px] bg-primary hover:bg-primary/90"
-            aria-label={currentStep === steps.length - 1 ? t('onboarding.finish') : t('onboarding.next')}
-          >
-            {currentStep === steps.length - 1 ? t('onboarding.finish') : t('onboarding.next')}
-          </Button>
-        </div>
-
-        {/* Replay tutorial option */}
-        {currentStep === steps.length - 1 && (
-          <div className="text-center pt-2 border-t">
+          {/* Audio control */}
+          <div className="mb-6 flex justify-center">
             <Button
-              onClick={() => setCurrentStep(0)}
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="text-muted-foreground"
-              aria-label={t('onboarding.replay')}
+              onClick={() => playStepAudio(currentStep)}
+              className="min-w-[140px]"
             >
-              <RotateCcw className="h-4 w-4 mr-2" />
-              {t('onboarding.replay')}
+              <Volume2 className="h-4 w-4 mr-2" />
+              {t("onboarding.playAudio", {}, "Hear this message")}
             </Button>
           </div>
-        )}
+
+          {/* Navigation */}
+          <div className="flex justify-between gap-3">
+            {currentStep > 0 ? (
+              <Button variant="outline" onClick={prevStep} className="flex-1">
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                {t("onboarding.previous", {}, "Back")}
+              </Button>
+            ) : (
+              <div className="flex-1" />
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button onClick={nextStep} className="flex-1">
+                {t("onboarding.next", {}, "Next")}
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            ) : (
+              <Button onClick={onComplete} className="flex-1">
+                {t("onboarding.finish", {}, "Finish")}
+              </Button>
+            )}
+          </div>
+        </CardContent>
       </Card>
     </div>
   );

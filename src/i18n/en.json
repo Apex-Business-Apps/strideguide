@@ -171,5 +171,37 @@
       "iceNotified": "Emergency Contact Notified",
       "iceDesc": "SMS sent with timestamp and location (if available)"
     }
+  },
+  "onboarding": {
+    "step": "{n} of {total}",
+    "next": "Next",
+    "previous": "Back",
+    "skip": "Skip tutorial",
+    "playAudio": "Hear this message",
+    "finish": "Finish",
+    "welcome": {
+      "title": "Welcome to StrideGuide",
+      "content": "I'll guide you with short sounds and clear directions. You can use me offline, in English or French."
+    },
+    "perms": {
+      "title": "Allow camera and sound",
+      "content": "The camera helps me see obstacles. Tap once to allow sound so I can speak and beep."
+    },
+    "start": {
+      "title": "Start & Stop",
+      "content": "Tap the big Start button to begin guidance. Tap again to stop. You will hear beeps after you allow sound."
+    },
+    "finder": {
+      "title": "Find your items",
+      "content": "Teach me your keys with a few photos. I'll beep faster and say \"Found keys\" when they're centered."
+    },
+    "sos": {
+      "title": "SOS help",
+      "content": "Press and hold the SOS button for 1 second. Release to cancel. I'll open a text to your emergency contact."
+    },
+    "done": {
+      "title": "You're ready",
+      "content": "Big buttons. Clear sounds. Works offline. You can replay this tutorial anytime in Settings."
+    }
   }
 }

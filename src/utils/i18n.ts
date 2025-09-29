@@ -27,4 +27,19 @@ i18n
     }
   });
 
+// Safe lookup with human fallback
+export function t(key: string, params: Record<string, any> = {}, fallback = "") {
+  const dict = resources[i18n.language as keyof typeof resources]?.translation || resources.en.translation;
+  let s = (dict as any)[key] || fallback;
+  
+  // Simple token replace: {n}, {total}, {time}, {lang}
+  if (s && params) {
+    Object.keys(params).forEach(k => {
+      s = s.replace(new RegExp(`\\{${k}\\}`, 'g'), String(params[k]));
+    });
+  }
+  
+  return s || `[${key}]`; // last-resort visible bracketed key
+}
+
 export default i18n;
