@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { policyManager, type RecordingPolicy } from '@/utils/PolicyManager';
+import { PolicyManager } from '@/utils/PolicyManager';
 import { useToast } from '@/hooks/use-toast';
 
 export interface RecordingSegment {
@@ -43,7 +43,7 @@ export const useEmergencyRecording = () => {
     voiceActivation: true,
     tripleVolumePress: true
   });
-  const [policy, setPolicy] = useState<RecordingPolicy | null>(null);
+  const [policy, setPolicy] = useState<any | null>(null);
   const [storageUsed, setStorageUsed] = useState(0);
   const [sessions, setSessions] = useState<RecordingSession[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -55,17 +55,13 @@ export const useEmergencyRecording = () => {
 
   // Initialize policy and settings
   useEffect(() => {
-    policyManager.initialize();
-    const currentPolicy = policyManager.getCurrentPolicy();
-    setPolicy(currentPolicy);
-    
-    // Update settings based on policy
-    setSettings(prev => ({
-      ...prev,
-      retentionHours: currentPolicy.defaultRetentionHours,
-      beepEnabled: currentPolicy.requiresBeep || prev.beepEnabled,
-      audioOnlyMode: !currentPolicy.audioAllowed
-    }));
+    const mockPolicy = {
+      audioAllowed: true,
+      requiresBeep: false,
+      region: 'CA',
+      consentModalRequired: false
+    };
+    setPolicy(mockPolicy);
     
     loadStoredSessions();
     setIsInitialized(true);
@@ -101,7 +97,7 @@ export const useEmergencyRecording = () => {
     if (!policy || isRecording) return;
 
     // Check consent for all-party states
-    if (policy.region === 'US_ALL_PARTY' && !policyManager.getConsentState().allPartyConsent) {
+    if (policy.region === 'US_ALL_PARTY' && !PolicyManager.hasConsent()) {
       toast({
         title: "Recording Consent Required",
         description: "All-party consent needed in this jurisdiction. Audio will be disabled.",

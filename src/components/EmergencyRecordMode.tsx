@@ -47,7 +47,7 @@ const EmergencyRecordMode = () => {
 
   // Handle consent for all-party states
   const handleConsentModal = () => {
-    if (needsConsent && !policyManager.getConsentState().allPartyConsent) {
+    if (needsConsent && !PolicyManager.hasConsent()) {
       setShowConsentModal(true);
     } else {
       startRecording('manual');
@@ -55,7 +55,7 @@ const EmergencyRecordMode = () => {
   };
 
   const handleConsentApprove = () => {
-    policyManager.updateConsent(true);
+    PolicyManager.giveConsent();
     setConsentGiven(true);
     setShowConsentModal(false);
     startRecording('manual');
@@ -120,7 +120,7 @@ const EmergencyRecordMode = () => {
           <div className="p-3 rounded-lg bg-muted">
             <p className="text-sm font-medium mb-1">Legal Basis</p>
             <p className="text-xs text-muted-foreground">
-              {policyManager.getLegalBasisText()}
+              Emergency recording legal basis: Safety and security purposes under applicable privacy laws
             </p>
           </div>
 

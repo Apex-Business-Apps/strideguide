@@ -237,8 +237,8 @@ const SettingsDashboard: React.FC<SettingsDashboardProps> = ({ onBack, replayTut
                 className="w-full"
                 onClick={async () => {
                   try {
-                    const { kvStore } = await import('@/crypto/kv');
-                    await kvStore.clear();
+                    const { EncryptedKV } = await import('@/crypto/kv');
+                    await EncryptedKV.deleteAll();
                     toast({ title: 'All encrypted data deleted' });
                   } catch (error) {
                     console.error('Delete failed:', error);

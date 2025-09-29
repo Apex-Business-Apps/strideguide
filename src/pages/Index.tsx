@@ -36,7 +36,7 @@ const Index = () => {
 
     // Initialize security guards
     BatteryGuard.initialize();
-    SOSGuard.initialize();
+    // SOSGuard is already initialized as singleton
     
     // Subscribe to health changes
     const unsubscribe = HealthManager.onHealthChange((status) => {
