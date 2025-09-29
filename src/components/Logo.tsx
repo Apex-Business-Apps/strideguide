@@ -14,7 +14,8 @@ export const Logo: React.FC<LogoProps> = ({ variant = 'wordmark', className = ''
       className={className}
       style={{ 
         height: variant === 'monogram' ? '192px' : '80px',
-        width: 'auto'
+        width: 'auto',
+        transform: 'scaleX(1.15)'
       }}
     />
   );
