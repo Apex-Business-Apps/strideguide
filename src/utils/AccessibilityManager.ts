@@ -46,12 +46,16 @@ export class AccessibilityManager {
    */
   private detectScreenReader(): void {
     // Check for screen reader indicators
+    const hasReducedMotion = typeof window !== 'undefined' && 
+      window.matchMedia && 
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
     const hasScreenReader = 
       'speechSynthesis' in window ||
       navigator.userAgent.includes('NVDA') ||
       navigator.userAgent.includes('JAWS') ||
       navigator.userAgent.includes('VoiceOver') ||
-      (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      hasReducedMotion;
 
     this.state.screenReaderActive = hasScreenReader;
   }
