@@ -581,13 +581,13 @@ const Index: React.FC = () => {
           </div>
           
           <p className="text-lg text-muted-foreground max-w-sm mx-auto leading-relaxed">
-            {t('app.tagline', 'Your visual guidance assistant, in your pocket.')}
+            {t('hero.title')}
           </p>
           
           <div className="flex justify-center gap-2 flex-wrap">
-            <Badge variant="secondary">English • French</Badge>
-            <Badge variant="secondary">Works offline</Badge>
-            <Badge variant="secondary">Privacy first</Badge>
+            <Badge variant="secondary">{t('badge.langs')}</Badge>
+            <Badge variant="secondary">{t('badge.offline')}</Badge>
+            <Badge variant="secondary">{t('badge.privacy')}</Badge>
             {isPremiumUser && (
               <Badge variant="default" className="gap-1">
                 <Zap className="h-3 w-3" />
@@ -652,7 +652,7 @@ const Index: React.FC = () => {
             }`}
           >
             <Eye className="h-6 w-6" />
-            {isGuidanceActive ? 'Stop Guidance' : 'Start Guidance'}
+            {isGuidanceActive ? 'Stop Guidance' : t('home.start')}
           </Button>
 
           {/* Item Finder */}
@@ -662,7 +662,7 @@ const Index: React.FC = () => {
             className="h-24 flex-col gap-2 text-base font-semibold"
           >
             <Search className="h-6 w-6" />
-            Find Item
+            {t('home.find')}
           </Button>
 
           {/* Emergency SOS */}
@@ -672,7 +672,7 @@ const Index: React.FC = () => {
             className="h-24 flex-col gap-2 text-base font-semibold"
           >
             <AlertTriangle className="h-6 w-6" />
-            Emergency SOS
+            {t('home.sos')}
           </Button>
 
           {/* Quick Actions / AI Chat */}
@@ -689,7 +689,7 @@ const Index: React.FC = () => {
             ) : (
               <>
                 <Menu className="h-6 w-6" />
-                Quick Actions
+                {t('home.quick')}
               </>
             )}
           </Button>
@@ -703,7 +703,7 @@ const Index: React.FC = () => {
             className="h-16 flex-col gap-1"
           >
             <Settings className="h-5 w-5" />
-            <span className="text-sm">Settings</span>
+            <span className="text-sm">{t('home.settings')}</span>
           </Button>
 
           <FeatureGate
@@ -743,7 +743,7 @@ const Index: React.FC = () => {
           {!audioArmed && (
             <div className="text-center">
               <Badge variant="outline" className="text-xs">
-                Tap any button to enable audio
+                {t('audio.tapToArm')}
               </Badge>
             </div>
           )}
