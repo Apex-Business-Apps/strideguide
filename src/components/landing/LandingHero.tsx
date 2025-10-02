@@ -63,9 +63,13 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onInstall, onSeePremiu
           <div className="relative">
             <div className="relative mx-auto w-full max-w-sm aspect-[9/19] bg-foreground/5 rounded-3xl border-4 border-foreground/10 shadow-2xl overflow-hidden">
               <img 
-                src={interfaceScreenshot} 
-                alt="StrideGuide mobile interface showing Vision Guidance, Find Lost Item, and Emergency SOS features with large, accessible buttons"
-                className="w-full h-full object-cover"
+                src={interfaceScreenshot}
+                alt="StrideGuide app interface: Vision Guidance, Find Lost Item, Emergency SOS — large accessible buttons."
+                className="w-full h-full object-cover object-top"
+                loading="lazy"
+                decoding="async"
+                width={512}
+                height={1088}
               />
             </div>
             {/* Decorative gradient blur */}
