@@ -49,7 +49,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onInstall, onSeePremiu
                 onClick={onSeePremium}
                 variant="outline"
                 size="lg"
-                className="min-h-[52px] text-base font-semibold px-8 border-white text-white hover:bg-white/10"
+                className="min-h-[52px] text-base font-semibold px-8 bg-white text-black border-white hover:bg-white/90"
                 aria-label={i18n.language === 'en' ? 'Find Lost Item' : 'Retrouver un objet'}
               >
                 {i18n.language === 'en' ? 'Find Lost Item' : 'Retrouver un objet'}
