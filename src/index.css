@@ -153,4 +153,10 @@ All colors MUST be HSL.
       transition: none !important;
     }
   }
+  
+  /* Hide Lovable badge */
+  #lovable-badge, .lovable-badge, [data-testid="lovable-badge"] { 
+    display: none !important; 
+    visibility: hidden !important; 
+  }
 }
