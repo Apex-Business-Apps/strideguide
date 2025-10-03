@@ -12,6 +12,8 @@ import Index from "./pages/Index";
 import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import ConsentModal from "./components/ConsentModal";
 import DashboardPage from "./pages/DashboardPage";
 import PricingPage from "./pages/PricingPage";
 import HelpPage from "./pages/HelpPage";
@@ -69,6 +71,7 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <ConsentModal />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<LandingPage />} />
@@ -95,6 +98,7 @@ const App = () => {
               />
               <Route path="/pricing" element={<PricingPage onBack={() => window.history.back()} />} />
               <Route path="/help" element={<HelpPage onBack={() => window.history.back()} />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

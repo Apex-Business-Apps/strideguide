@@ -135,4 +135,22 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* @stride/a11y-core:v1 - WCAG 2.2 essentials */
+  :focus {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+  
+  button, .tap {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 }
