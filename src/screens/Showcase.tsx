@@ -3,7 +3,6 @@ import "../i18n/index";
 import { useTranslation } from "react-i18next";
 import AuthGate from "../components/AuthGate";
 import PrimaryCTA from "../components/PrimaryCTA";
-import DangerBtn from "../components/DangerBtn";
 
 export default function Showcase() {
   const { t } = useTranslation();
@@ -28,16 +27,16 @@ export default function Showcase() {
       <header className="mb-4">
         <div className="flex items-center gap-3">
           <div aria-hidden className="w-8 h-8 rounded bg-indigo-600" />
-          <h1 className="text-xl font-bold text-white">Stride Guide</h1>
+          <h1 className="text-xl font-bold">Stride Guide</h1>
           <div className="hidden md:block ml-auto w-[240px]">
-            <PrimaryCTA onClick={() => {}}>
+            <PrimaryCTA onClick={() => { /* wire real action */ }}>
               {t("ctaPrimary")}
             </PrimaryCTA>
           </div>
         </div>
-        <p className="mt-2 text-sm text-neutral-400">{t("tagline")}</p>
+        <p className="mt-2 text-sm text-neutral-300">{t("tagline")}</p>
         <div className="md:hidden mt-3">
-          <PrimaryCTA onClick={() => {}}>
+          <PrimaryCTA onClick={() => { /* wire real action */ }}>
             {t("ctaPrimary")}
           </PrimaryCTA>
         </div>
@@ -47,7 +46,7 @@ export default function Showcase() {
       <section aria-labelledby="see-int" className="bg-neutral-950 rounded-2xl p-5 md:p-8 border border-neutral-800">
         <h2 id="see-int" className="text-lg font-semibold mb-4">See the interface</h2>
 
-        {/* PRIMARY CTA — first, full width */}
+        {/* PRIMARY CTA — full width, first */}
         <div className="mb-3">
           <PrimaryCTA onClick={() => { /* start guidance */ }}>
             {t("ctaPrimary")}
@@ -60,16 +59,16 @@ export default function Showcase() {
           <SecBtn>Settings</SecBtn>
         </div>
 
-        {/* Auth gate */}
-        <div className="mt-6">
-          <AuthGate isAuthed={isAuthed} onSignIn={() => {}}>
-            <div className="text-sm text-green-400">✓ Authenticated</div>
-          </AuthGate>
+        {/* Tertiary/danger action */}
+        <div className="mt-3">
+          <SecBtn className="bg-red-600 hover:bg-red-700 border-red-700">Emergency SOS</SecBtn>
         </div>
 
-        {/* Danger zone — demoted visually and in order */}
-        <div className="mt-4" role="region" aria-label="Danger actions">
-          <DangerBtn>Emergency SOS</DangerBtn>
+        {/* Auth gate */}
+        <div className="mt-6">
+          <AuthGate isAuthed={isAuthed} onSignIn={() => { /* auth */ }}>
+            <div className="text-sm text-green-400">✓ Authenticated</div>
+          </AuthGate>
         </div>
       </section>
 
