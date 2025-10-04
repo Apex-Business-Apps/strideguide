@@ -1,18 +1,33 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { User, Session } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import Showcase from "./screens/Showcase";
-import DashboardPage from "./pages/DashboardPage";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { useI18nGuard } from "@/utils/i18nGuard";
 import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
+import NotFound from "./pages/NotFound";
+import Showcase from "./screens/Showcase";
+import AuthPage from "./pages/AuthPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import ConsentModal from "./components/ConsentModal";
+import DashboardPage from "./pages/DashboardPage";
+import PricingPage from "./pages/PricingPage";
+import HelpPage from "./pages/HelpPage";
 
-export default function App() {
+const queryClient = new QueryClient();
+
+const App = () => {
+  // Run i18n guard in development to catch unresolved keys
+  useI18nGuard();
+  
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [devBypass, setDevBypass] = useState(() => 
-    localStorage.getItem('stride-dev-bypass') === 'true'
-  );
+  const [session, setSession] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Set up auth state listener
@@ -20,7 +35,7 @@ export default function App() {
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        setLoading(false);
+        setIsLoading(false);
       }
     );
 
@@ -28,53 +43,72 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  // Listen for dev bypass changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setDevBypass(localStorage.getItem('stride-dev-bypass') === 'true');
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  const handleAuthSuccess = () => {
+    // Session will be updated via onAuthStateChange
+  };
 
   const handleSignOut = () => {
     setUser(null);
     setSession(null);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
-
+  
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-[#0A0A0A] text-white">
-        <Routes>
-          <Route path="/" element={<Showcase />} />
-          <Route 
-            path="/dashboard" 
-            element={
-              (user || devBypass) ? (
-                <DashboardPage user={user} onSignOut={handleSignOut} />
-              ) : (
-                <Navigate to="/" replace />
-              )
-            } 
-          />
-          <Route path="/guidance" element={<Index />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <ConsentModal />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Showcase />} />
+              <Route path="/landing" element={<LandingPage />} />
+              <Route path="/app" element={<Index />} />
+              <Route 
+                path="/auth" 
+                element={
+                  user ? (
+                    <DashboardPage user={user} onSignOut={handleSignOut} />
+                  ) : (
+                    <AuthPage onAuthSuccess={handleAuthSuccess} />
+                  )
+                } 
+              />
+              <Route 
+                path="/dashboard" 
+                element={
+                  user ? (
+                    <DashboardPage user={user} onSignOut={handleSignOut} />
+                  ) : (
+                    <AuthPage onAuthSuccess={handleAuthSuccess} />
+                  )
+                } 
+              />
+              <Route path="/pricing" element={<PricingPage onBack={() => window.history.back()} />} />
+              <Route path="/help" element={<HelpPage onBack={() => window.history.back()} />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
-}
+};
+
+export default App;

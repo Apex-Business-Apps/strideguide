@@ -1,68 +1,88 @@
 import React from "react";
-import Hero from "../components/Hero";
-import PrimaryCTA from "../components/PrimaryCTA";
+import "../i18n/index";
+import { useTranslation } from "react-i18next";
 import AuthGate from "../components/AuthGate";
+import PrimaryCTA from "../components/PrimaryCTA";
+import DangerBtn from "../components/DangerBtn";
 
 export default function Showcase() {
-  const [isAuthed, setIsAuthed] = React.useState(false);
-  const [devBypass, setDevBypass] = React.useState(() => 
-    localStorage.getItem('stride-dev-bypass') === 'true'
+  const { t } = useTranslation();
+  const [isAuthed] = React.useState(false);
+
+  const SecBtn: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, className = "", ...rest }) => (
+    <button
+      {...rest}
+      className={
+        "w-full rounded-2xl h-[52px] min-h-[52px] px-4 border border-neutral-600 bg-neutral-900 text-white " +
+        "focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:ring-white " +
+        "hover:bg-neutral-800 transition " + className
+      }
+    >
+      {children}
+    </button>
   );
-
-  const toggleDevBypass = () => {
-    const newValue = !devBypass;
-    setDevBypass(newValue);
-    localStorage.setItem('stride-dev-bypass', String(newValue));
-  };
-
-  const startFlow = () => {
-    if (!isAuthed && !devBypass) {
-      document.getElementById("auth-block")?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return; // click 1 -> reveals sign-in
-    }
-    window.location.assign("/guidance"); // click 2 -> go
-  };
 
   return (
     <main className="mx-auto max-w-5xl p-4 md:p-6 text-white">
-      {/* Dev bypass toggle */}
-      <div className="mb-4 flex items-center gap-3 p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30">
-        <button
-          onClick={toggleDevBypass}
-          className="px-4 py-2 rounded-lg bg-yellow-500 text-black font-semibold text-sm hover:bg-yellow-400 transition"
-        >
-          DEV BYPASS: {devBypass ? 'ON ✓' : 'OFF'}
-        </button>
-        <span className="text-xs text-yellow-200">
-          {devBypass ? 'Auth check disabled - clicking Start Guidance goes directly to /guidance' : 'Auth check enabled - normal flow'}
-        </span>
-      </div>
+      {/* Header with global CTA */}
+      <header className="mb-4">
+        <div className="flex items-center gap-3">
+          <div aria-hidden className="w-8 h-8 rounded bg-indigo-600" />
+          <h1 className="text-xl font-bold text-white">Stride Guide</h1>
+          <div className="hidden md:block ml-auto w-[240px]">
+            <PrimaryCTA onClick={() => {}}>
+              {t("ctaPrimary")}
+            </PrimaryCTA>
+          </div>
+        </div>
+        <p className="mt-2 text-sm text-neutral-400">{t("tagline")}</p>
+        <div className="md:hidden mt-3">
+          <PrimaryCTA onClick={() => {}}>
+            {t("ctaPrimary")}
+          </PrimaryCTA>
+        </div>
+      </header>
 
-      <Hero onStart={startFlow} PrimaryCTA={PrimaryCTA} />
+      {/* "See the interface" with CTA-first structure */}
+      <section aria-labelledby="see-int" className="bg-neutral-950 rounded-2xl p-5 md:p-8 border border-neutral-800">
+        <h2 id="see-int" className="text-lg font-semibold mb-4">See the interface</h2>
 
-      {/* Secondary (below the fold) */}
-      <section className="mt-6 rounded-3xl border border-neutral-800 bg-neutral-950 p-5 md:p-8">
-        <h2 className="text-lg font-semibold mb-4">See the interface</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-          <button className="rounded-2xl h-[52px] border border-neutral-600 bg-neutral-900 text-white hover:bg-neutral-800 transition">
-            Find Item
-          </button>
-          <button className="rounded-2xl h-[52px] border border-neutral-600 bg-neutral-900 text-white hover:bg-neutral-800 transition">
-            Settings
-          </button>
+        {/* PRIMARY CTA — first, full width */}
+        <div className="mb-3">
+          <PrimaryCTA onClick={() => { /* start guidance */ }}>
+            {t("ctaPrimary")}
+          </PrimaryCTA>
         </div>
 
-        <div id="auth-block" className="mt-6">
-          <AuthGate isAuthed={isAuthed} onSignIn={() => setIsAuthed(true)}>
+        {/* Secondary actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+          <SecBtn>Find Item</SecBtn>
+          <SecBtn>Settings</SecBtn>
+        </div>
+
+        {/* Auth gate */}
+        <div className="mt-6">
+          <AuthGate isAuthed={isAuthed} onSignIn={() => {}}>
             <div className="text-sm text-green-400">✓ Authenticated</div>
           </AuthGate>
         </div>
 
+        {/* Danger zone — demoted visually and in order */}
         <div className="mt-4" role="region" aria-label="Danger actions">
-          <button className="w-full rounded-2xl h-[52px] border border-red-600 text-red-500 hover:bg-red-600/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300 focus-visible:ring-offset-2 transition">
-            Emergency SOS
-          </button>
+          <DangerBtn>Emergency SOS</DangerBtn>
         </div>
+      </section>
+
+      {/* Feature cards */}
+      <section className="grid md:grid-cols-2 gap-4 mt-6">
+        <article className="rounded-2xl border border-neutral-800 p-4 bg-neutral-950">
+          <h3 className="font-semibold">Guidance</h3>
+          <p className="text-sm text-neutral-300 mt-1">Clear audio cues to navigate safely.</p>
+        </article>
+        <article className="rounded-2xl border border-neutral-800 p-4 bg-neutral-950">
+          <h3 className="font-semibold">Find Item</h3>
+          <p className="text-sm text-neutral-300 mt-1">Teach 12 frames to locate keys or wallet.</p>
+        </article>
       </section>
     </main>
   );

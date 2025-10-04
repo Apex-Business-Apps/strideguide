@@ -1,18 +1,23 @@
 import React from "react";
 
-export default function PrimaryCTA(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const { className = "", children, ...rest } = props;
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: React.ReactNode;
+};
+
+export default function PrimaryCTA({ children, className = "", ...rest }: Props) {
   return (
     <button
       {...rest}
+      data-variant="primary-cta"
       className={
-        "w-full rounded-2xl h-[64px] min-h-[64px] px-6 text-lg font-semibold " +
-        "bg-[#5B5CE2] text-white border border-indigo-400 shadow-lg " +
-        "hover:bg-indigo-500 active:bg-indigo-700 transition " +
-        "focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 " +
-        className
+        "rounded-2xl px-6 h-[64px] min-h-[64px] text-lg font-semibold " +
+        "bg-indigo-600 text-white border border-indigo-400 " +
+        "hover:bg-indigo-500 active:bg-indigo-700 " +
+        "shadow-lg transition focus:outline-none " +
+        "focus-visible:ring-4 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 " +
+        "w-full " + className
       }
-      aria-label="Start Guidance"
+      aria-label="Primary call to action"
     >
       {children}
     </button>

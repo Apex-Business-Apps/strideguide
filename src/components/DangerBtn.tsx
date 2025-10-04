@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function DangerBtn(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const { className = "", children, ...rest } = props;
+  const { className = "", ...rest } = props;
   return (
     <button
       {...rest}
@@ -12,8 +12,6 @@ export default function DangerBtn(props: React.ButtonHTMLAttributes<HTMLButtonEl
         "focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300 focus-visible:ring-offset-2 " +
         className
       }
-    >
-      {children}
-    </button>
+    />
   );
 }
