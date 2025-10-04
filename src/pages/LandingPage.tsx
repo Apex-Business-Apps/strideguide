@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LandingHeader } from '@/components/landing/LandingHeader';
 import { LandingHero } from '@/components/landing/LandingHero';
+import { InterfacePreview } from '@/components/landing/InterfacePreview';
 import { ValuePillars } from '@/components/landing/ValuePillars';
 import { WhyStrideGuide } from '@/components/landing/WhyStrideGuide';
 import { PricingSection } from '@/components/landing/PricingSection';
@@ -56,6 +57,7 @@ const LandingPage: React.FC = () => {
       
       <main>
         <LandingHero onInstall={handleInstall} onSeePremium={handleSeePremium} />
+        <InterfacePreview />
         <ValuePillars />
         <WhyStrideGuide />
         <div id="pricing">
