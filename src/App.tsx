@@ -11,6 +11,7 @@ import { useI18nGuard } from "@/utils/i18nGuard";
 import Index from "./pages/Index";
 import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
+import Showcase from "./screens/Showcase";
 import AuthPage from "./pages/AuthPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ConsentModal from "./components/ConsentModal";
@@ -74,7 +75,8 @@ const App = () => {
           <ConsentModal />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/" element={<Showcase />} />
+              <Route path="/landing" element={<LandingPage />} />
               <Route path="/app" element={<Index />} />
               <Route 
                 path="/auth" 
