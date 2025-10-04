@@ -623,8 +623,13 @@ export type Database = {
           plan_name: string
           priority_support: boolean
           status: string
+          stripe_subscription_id: string
           white_label: boolean
         }[]
+      }
+      is_org_admin: {
+        Args: { org_id: string }
+        Returns: boolean
       }
       user_has_feature_access: {
         Args: { feature_name: string; user_uuid: string }
