@@ -71,16 +71,16 @@ const LandingPage: React.FC = () => {
         
         {/* SEO Content Section - Hidden from visual users but readable by search engines */}
         <section className="sr-only" aria-hidden="true">
-          <h2>About StrideGuide - AI Vision Assistant for Blind and Low Vision Users</h2>
+          <h2>About StrideGuide - Vision Guidance for Blind and Low Vision Users</h2>
           <p>
-            StrideGuide is a free, offline-first AI-powered vision assistant designed specifically for blind, 
+            StrideGuide is a free, offline-first vision assistant designed specifically for blind, 
             low vision, and senior users across Canada, the United States, and Europe. Our assistive technology 
             app provides real-time obstacle detection, voice-guided navigation, emergency SOS features, and a 
             lost item finder - all working completely offline without requiring internet connectivity.
           </p>
           <h3>Key Features for Visually Impaired Users</h3>
           <ul>
-            <li>Real-time AI obstacle detection with 92% accuracy</li>
+            <li>Real-time obstacle detection with advanced computer vision</li>
             <li>Voice navigation guidance in English and French</li>
             <li>Emergency SOS with automatic location sharing</li>
             <li>Lost item finder using on-device machine learning</li>
@@ -99,7 +99,7 @@ const LandingPage: React.FC = () => {
           </p>
           <h3>Privacy and Security</h3>
           <p>
-            Unlike other navigation apps, StrideGuide processes all AI vision detection on your device. 
+            Unlike other navigation apps, StrideGuide processes all vision detection on your device. 
             Your camera footage is never uploaded to cloud servers, ensuring complete privacy and PIPEDA 
             compliance for Canadian users. All personal data is encrypted and stored locally on your device.
           </p>

@@ -32,12 +32,12 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onInstall, onSeePremiu
           <div className="space-y-8 text-hero-fg animate-fade-in">
             <div className="space-y-6">
               <h1 id="hero-heading" className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
-                {i18n.language === 'en' ? 'Free AI Vision Assistant for Blind & Low Vision Users' : 'Assistant de Vision IA Gratuit pour Malvoyants'}
+                {i18n.language === 'en' ? 'Navigate Safely with Vision Guidance for Blind & Low Vision Users' : 'Naviguez en sécurité avec un guidage visuel pour malvoyants'}
               </h1>
               <p className="text-xl sm:text-2xl text-hero-fg/90 max-w-2xl leading-relaxed">
                 {i18n.language === 'en' 
                   ? 'Navigate independently with real-time obstacle detection, voice guidance, and emergency features. Works completely offline.'
-                  : 'Naviguez en toute autonomie avec détection d\'obstacles, guidage vocal et fonctions d\'urgence. Fonctionne entièrement hors ligne.'}
+                  : 'Naviguez en toute autonomie avec détection d\'obstacles en temps réel, guidage vocal et fonctions d\'urgence. Fonctionne entièrement hors ligne.'}
               </p>
             </div>
 
