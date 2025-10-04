@@ -20,10 +20,13 @@ export const InterfacePreview: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <figure className="bg-card rounded-lg shadow-2xl overflow-hidden border border-border">
             <img 
-              src="/screenshot-interface.png" 
-              alt="Screenshot of StrideGuide home screen"
+              src="/og-image.png" 
+              alt="StrideGuide interface preview"
               className="w-full h-auto"
               loading="lazy"
+              decoding="async"
+              width={1280}
+              height={720}
             />
             <figcaption className="p-6 bg-card border-t border-border">
               <p className="text-sm md:text-base text-muted-foreground text-center">
