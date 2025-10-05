@@ -16,20 +16,38 @@ import "./utils/AudioArmer";
 // Initialize performance monitoring
 import "./utils/PerformanceMonitor";
 
-// Register service worker with cache-bust version
-if ("serviceWorker" in navigator) {
+// Service Worker registration (disabled in preview/dev, enabled in production)
+const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
+const isPreview = window.location.hostname.includes('.lovable.app');
+
+if ("serviceWorker" in navigator && !isDevelopment && !isPreview) {
+  // Only register SW in production builds
   const url = `/sw.js?v=${encodeURIComponent(SW_VERSION)}`;
   window.addEventListener("load", () => {
     navigator.serviceWorker.register(url, { 
       scope: '/',
       updateViaCache: 'none' // Always check for updates
     }).then((registration) => {
+      console.log('[App] Service Worker registered, version:', SW_VERSION);
       // Check for updates every hour
       setInterval(() => {
         registration.update().catch(() => {});
       }, 1000 * 60 * 60);
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn('[App] Service Worker registration failed:', err);
+    });
   });
+} else if (isDevelopment || isPreview) {
+  console.log('[App] Service Worker DISABLED (dev/preview mode). Current version:', SW_VERSION);
+  // Unregister any existing service workers in dev/preview
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations.forEach(reg => {
+        reg.unregister();
+        console.log('[App] Unregistered existing Service Worker in dev/preview mode');
+      });
+    });
+  }
 }
 
 // Preload critical resources

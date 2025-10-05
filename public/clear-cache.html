@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clear Cache - StrideGuide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #1a202c;
+    }
+    p {
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .status {
+      background: #f7fafc;
+      border-left: 4px solid #4299e1;
+      padding: 16px;
+      margin: 20px 0;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .success {
+      border-left-color: #48bb78;
+      background: #f0fff4;
+      color: #22543d;
+    }
+    .warning {
+      border-left-color: #ed8936;
+      background: #fffaf0;
+      color: #7c2d12;
+    }
+    .error {
+      border-left-color: #f56565;
+      background: #fff5f5;
+      color: #742a2a;
+    }
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-right: 12px;
+      margin-top: 8px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: #718096;
+    }
+    .btn-secondary:hover {
+      box-shadow: 0 8px 20px rgba(113, 128, 150, 0.4);
+    }
+    ul {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+    li {
+      color: #4a5568;
+      line-height: 1.8;
+    }
+    code {
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .version {
+      font-size: 12px;
+      color: #a0aec0;
+      margin-top: 24px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Clear Cache & Service Worker</h1>
+    <p>This utility clears all cached data and unregisters the service worker. Use this when:</p>
+    <ul>
+      <li>You're seeing stale or old content after updates</li>
+      <li>New features aren't appearing</li>
+      <li>The app is behaving unexpectedly after a deployment</li>
+      <li>Version stamps don't match the latest edit</li>
+    </ul>
+
+    <div id="status" class="status">
+      Ready to clear cache. Click the button below to start.
+    </div>
+
+    <button id="clearBtn" onclick="clearEverything()">Clear All Cache & Reload</button>
+    <button class="btn-secondary" onclick="window.location.href='/'">Cancel & Go Home</button>
+
+    <div class="version" id="swVersion">Checking service worker version...</div>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const clearBtn = document.getElementById('clearBtn');
+    const versionEl = document.getElementById('swVersion');
+
+    // Check current SW version
+    (async () => {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        if (registrations.length > 0) {
+          const reg = registrations[0];
+          versionEl.textContent = `Service Worker: Active (${registrations.length} registration(s) found)`;
+        } else {
+          versionEl.textContent = 'Service Worker: Not registered';
+        }
+      } else {
+        versionEl.textContent = 'Service Worker: Not supported in this browser';
+      }
+    })();
+
+    async function clearEverything() {
+      clearBtn.disabled = true;
+      const steps = [];
+
+      try {
+        // Step 1: Unregister all service workers
+        if ('serviceWorker' in navigator) {
+          statusEl.className = 'status';
+          statusEl.textContent = '🔄 Unregistering service workers...';
+          
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+          }
+          steps.push(`✅ Unregistered ${registrations.length} service worker(s)`);
+        } else {
+          steps.push('ℹ️ Service Worker not supported');
+        }
+
+        // Step 2: Clear all caches
+        statusEl.textContent = '🔄 Clearing all caches...';
+        
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
+          steps.push(`✅ Deleted ${cacheNames.length} cache(s): ${cacheNames.join(', ')}`);
+        } else {
+          steps.push('ℹ️ Cache API not supported');
+        }
+
+        // Step 3: Clear localStorage
+        statusEl.textContent = '🔄 Clearing localStorage...';
+        const lsKeys = Object.keys(localStorage);
+        localStorage.clear();
+        steps.push(`✅ Cleared localStorage (${lsKeys.length} item(s))`);
+
+        // Step 4: Clear sessionStorage
+        statusEl.textContent = '🔄 Clearing sessionStorage...';
+        const ssKeys = Object.keys(sessionStorage);
+        sessionStorage.clear();
+        steps.push(`✅ Cleared sessionStorage (${ssKeys.length} item(s))`);
+
+        // Step 5: Clear IndexedDB
+        statusEl.textContent = '🔄 Clearing IndexedDB...';
+        if ('indexedDB' in window) {
+          try {
+            const databases = await indexedDB.databases();
+            for (const db of databases) {
+              if (db.name) {
+                indexedDB.deleteDatabase(db.name);
+              }
+            }
+            steps.push(`✅ Cleared ${databases.length} IndexedDB database(s)`);
+          } catch (e) {
+            steps.push('⚠️ Could not enumerate IndexedDB databases (this is normal in some browsers)');
+          }
+        } else {
+          steps.push('ℹ️ IndexedDB not supported');
+        }
+
+        // Success!
+        statusEl.className = 'status success';
+        statusEl.innerHTML = `
+          <strong>✅ Cache cleared successfully!</strong><br/><br/>
+          ${steps.join('<br/>')}
+          <br/><br/>
+          <strong>Reloading in 3 seconds to load fresh content...</strong>
+        `;
+
+        // Reload with cache bypass
+        setTimeout(() => {
+          window.location.href = '/?nocache=' + Date.now();
+        }, 3000);
+
+      } catch (error) {
+        statusEl.className = 'status error';
+        statusEl.innerHTML = `
+          <strong>❌ Error clearing cache</strong><br/><br/>
+          ${error.message}<br/><br/>
+          Completed steps:<br/>
+          ${steps.join('<br/>')}
+        `;
+        clearBtn.disabled = false;
+        console.error('Cache clear error:', error);
+      }
+    }
+
+    // Manual reload option
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        clearEverything();
+      }
+    });
+  </script>
+</body>
+</html>
