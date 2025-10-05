@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,7 +11,73 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+  console.log(`[${requestId}] AI chat request`);
+
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ 
+        error: "Authentication required",
+        code: "AUTH_REQUIRED" 
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error("Service misconfigured");
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    // Authenticate user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ 
+        error: "Authentication failed",
+        code: "AUTH_FAILED" 
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Rate limiting
+    const { data: rateLimitCheck } = await supabase
+      .rpc("check_rate_limit", {
+        _user_id: user.id,
+        _endpoint: "ai_chat",
+        _max_requests: 30,
+        _window_minutes: 1
+      });
+      
+    if (!rateLimitCheck) {
+      console.warn(`[${requestId}] Rate limit exceeded for user ${user.id}`);
+      
+      await supabase.from("security_audit_log").insert({
+        user_id: user.id,
+        event_type: "rate_limit_exceeded",
+        severity: "warning",
+        event_data: { endpoint: "ai_chat" }
+      });
+
+      return new Response(JSON.stringify({ 
+        error: "Too many requests. Please slow down.",
+        code: "RATE_LIMITED" 
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { messages } = await req.json();
     
     // Input validation
@@ -110,21 +177,44 @@ serve(async (req) => {
     const data = await response.json();
     const aiMessage = data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that request.";
 
+    // Log successful AI interaction
+    await supabase.from("security_audit_log").insert({
+      user_id: user.id,
+      event_type: "ai_chat_success",
+      severity: "info",
+      event_data: { 
+        response_time_ms: Date.now() - startTime,
+        tokens_used: data.usage?.total_tokens || 0
+      }
+    });
+
+    const duration = Date.now() - startTime;
+    console.log(`[${requestId}] AI chat completed (${duration}ms)`);
+
     return new Response(JSON.stringify({ 
       message: aiMessage,
       usage: data.usage 
     }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { 
+        ...corsHeaders, 
+        "Content-Type": "application/json",
+        "X-Request-ID": requestId,
+        "X-Response-Time": `${duration}ms`
+      },
     });
 
   } catch (error) {
-    console.error("AI chat error:", error);
+    console.error(`[${requestId}] AI chat error:`, error);
     return new Response(JSON.stringify({ 
       error: error instanceof Error ? error.message : "Unknown error",
       code: "INTERNAL_ERROR" 
     }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { 
+        ...corsHeaders, 
+        "Content-Type": "application/json",
+        "X-Request-ID": requestId 
+      },
     });
   }
 });
