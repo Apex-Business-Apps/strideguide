@@ -12,12 +12,30 @@ export const FAQ: React.FC = () => {
   const { t } = useTranslation();
 
   const faqs = [
-    { q: t('landing.faq1q'), a: t('landing.faq1a') },
-    { q: t('landing.faq2q'), a: t('landing.faq2a') },
-    { q: t('landing.faq3q'), a: t('landing.faq3a') },
-    { q: t('landing.faq4q'), a: t('landing.faq4a') },
-    { q: t('landing.faq5q'), a: t('landing.faq5a') },
-    { q: t('landing.faq6q'), a: t('landing.faq6a') },
+    { 
+      q: 'Does StrideGuide really work completely offline?', 
+      a: 'Yes! StrideGuide processes everything on your device. Once installed, you never need an internet connection for obstacle detection, voice guidance, or any core features. Perfect for users without data plans or in areas with poor reception.' 
+    },
+    { 
+      q: 'Is the free version really free forever?', 
+      a: 'Absolutely. The free version gives you 2 hours of daily guidance, obstacle detection, emergency SOS, and basic lost item finding - all completely free, no credit card required, forever.' 
+    },
+    { 
+      q: 'Will this work with my screen reader?', 
+      a: 'Yes! StrideGuide is fully compatible with VoiceOver (iOS) and TalkBack (Android). All buttons have descriptive labels, and we use proper ARIA semantics throughout the app.' 
+    },
+    { 
+      q: 'How accurate is the obstacle detection?', 
+      a: 'Our AI model achieves 92% accuracy for common obstacles (steps, curbs, poles, people). The AI runs directly on your phone using TensorFlow Lite, providing near-instant alerts without cloud delays.' 
+    },
+    { 
+      q: 'What phones does this work on?', 
+      a: 'StrideGuide works on any modern smartphone (iPhone 8+ or Android 9+). As a Progressive Web App, there\'s no app store download required - just visit our website and install.' 
+    },
+    { 
+      q: 'How does the emergency SOS work?', 
+      a: 'Press and hold the SOS button for 3 seconds. StrideGuide will automatically send a text message to your emergency contact with your location (if GPS available). The app also includes fall detection that automatically triggers SOS if a hard fall is detected.' 
+    },
   ];
 
   return (

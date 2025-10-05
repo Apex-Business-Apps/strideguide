@@ -14,10 +14,10 @@ export const LandingFooter: React.FC = () => {
   };
 
   const links = [
-    { label: t('footer.privacy'), href: '/privacy' },
-    { label: t('footer.terms'), href: '/terms' },
-    { label: t('footer.contact'), href: '/contact' },
-    { label: t('footer.accessibility'), href: '/accessibility' },
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Contact Support', href: 'mailto:support@strideguide.ca' },
+    { label: 'Accessibility Statement', href: '/accessibility' },
   ];
 
   return (
@@ -28,7 +28,7 @@ export const LandingFooter: React.FC = () => {
           <div className="space-y-3">
             <h3 className="text-lg font-bold text-foreground">StrideGuide</h3>
             <p className="text-sm text-muted-foreground max-w-xs">
-              {t('hero.sub')}
+              Navigate independently with real-time obstacle detection, voice guidance, and emergency features. Works completely offline.
             </p>
           </div>
 
@@ -68,7 +68,7 @@ export const LandingFooter: React.FC = () => {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground text-center">
-            {t('footer.copyright')}
+            © 2025 StrideGuide. Built in Canada for blind, low vision, and senior users worldwide.
           </p>
         </div>
       </div>
