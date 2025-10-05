@@ -1,14 +1,42 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
+// Tight CORS policy - only allow known origins
+const getAllowedOrigin = (requestOrigin: string | null): string => {
+  const allowedOrigins = [
+    'https://yrndifsbsmpvmpudglcc.supabase.co',
+    // Add your production domain here when deployed
+    // 'https://your-custom-domain.com',
+    // Add your preview domain here
+    // 'https://your-project.lovable.app',
+  ];
+  
+  if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    return requestOrigin;
+  }
+  
+  // Default to first allowed origin
+  return allowedOrigins[0];
+};
+
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': '', // Will be set dynamically per request
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 };
 
 serve(async (req) => {
+  // Set dynamic CORS origin based on request
+  const requestOrigin = req.headers.get('origin');
+  const allowedOrigin = getAllowedOrigin(requestOrigin);
+  const responseCorsHeaders = {
+    ...corsHeaders,
+    'Access-Control-Allow-Origin': allowedOrigin,
+  };
+
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: responseCorsHeaders });
   }
 
   const requestId = crypto.randomUUID();
@@ -23,7 +51,7 @@ serve(async (req) => {
         code: "AUTH_REQUIRED" 
       }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -46,7 +74,7 @@ serve(async (req) => {
         code: "AUTH_FAILED" 
       }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -74,7 +102,7 @@ serve(async (req) => {
         code: "RATE_LIMITED" 
       }), {
         status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -87,7 +115,7 @@ serve(async (req) => {
         code: "INVALID_INPUT" 
       }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -99,7 +127,7 @@ serve(async (req) => {
           code: "INVALID_MESSAGE" 
         }), {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
         });
       }
       
@@ -110,7 +138,7 @@ serve(async (req) => {
           code: "MESSAGE_TOO_LONG" 
         }), {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
         });
       }
     }
@@ -148,7 +176,7 @@ serve(async (req) => {
           code: "RATE_LIMITED" 
         }), {
           status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
         });
       }
       
@@ -158,7 +186,7 @@ serve(async (req) => {
           code: "PAYMENT_REQUIRED" 
         }), {
           status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
         });
       }
 
@@ -170,7 +198,7 @@ serve(async (req) => {
         code: "SERVICE_ERROR" 
       }), {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...responseCorsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -196,7 +224,7 @@ serve(async (req) => {
       usage: data.usage 
     }), {
       headers: { 
-        ...corsHeaders, 
+        ...responseCorsHeaders, 
         "Content-Type": "application/json",
         "X-Request-ID": requestId,
         "X-Response-Time": `${duration}ms`
@@ -211,7 +239,7 @@ serve(async (req) => {
     }), {
       status: 500,
       headers: { 
-        ...corsHeaders, 
+        ...responseCorsHeaders, 
         "Content-Type": "application/json",
         "X-Request-ID": requestId 
       },
