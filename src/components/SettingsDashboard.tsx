@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { BatteryGuard } from '@/utils/BatteryGuard';
 import { HealthManager } from '@/utils/HealthManager';
+import { useJourneyTrace } from '@/hooks/useJourneyTrace';
 import { 
   Settings, 
   Smartphone, 
@@ -35,6 +36,8 @@ const SettingsDashboard: React.FC<SettingsDashboardProps> = ({ onBack, replayTut
   const [healthStatus, setHealthStatus] = React.useState(HealthManager.getStatus());
   const [batteryInfo, setBatteryInfo] = React.useState(BatteryGuard.getBatteryInfo());
   const { toast } = useToast();
+  
+  const journeyTrace = useJourneyTrace('settings_save', { component: 'SettingsDashboard' });
 
   // Update health status and battery info
   React.useEffect(() => {
@@ -237,11 +240,15 @@ const SettingsDashboard: React.FC<SettingsDashboardProps> = ({ onBack, replayTut
                 className="w-full"
                 onClick={async () => {
                   try {
+                    const startTime = performance.now();
                     const { EncryptedKV } = await import('@/crypto/kv');
                     await EncryptedKV.deleteAll();
+                    const duration = Math.round(performance.now() - startTime);
+                    journeyTrace.complete({ action: 'delete_all', duration_ms: duration });
                     toast({ title: 'All encrypted data deleted' });
                   } catch (error) {
                     console.error('Delete failed:', error);
+                    journeyTrace.fail('Delete operation failed');
                     toast({ title: 'Delete failed', variant: 'destructive' });
                   }
                 }}

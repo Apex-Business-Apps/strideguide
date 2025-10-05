@@ -1,0 +1,17 @@
+/*
+  # Security Headers (OWASP ASVS Level 1 Baseline)
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(self), microphone=(), geolocation=(self), payment=()
+  
+  # Content Security Policy (strict mode)
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://yrndifsbsmpvmpudglcc.supabase.co https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://yrndifsbsmpvmpudglcc.supabase.co https://api.stripe.com wss://yrndifsbsmpvmpudglcc.supabase.co; frame-src https://js.stripe.com https://hooks.stripe.com; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; frame-ancestors 'none'
+
+/api/*
+  # CORS for API endpoints
+  Access-Control-Allow-Origin: https://yrndifsbsmpvmpudglcc.supabase.co
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: authorization, x-client-info, apikey, content-type, stripe-signature
+  Access-Control-Max-Age: 86400

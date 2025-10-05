@@ -232,6 +232,39 @@ export type Database = {
         }
         Relationships: []
       }
+      journey_traces: {
+        Row: {
+          created_at: string | null
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          journey_name: string
+          metadata: Json | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          journey_name: string
+          metadata?: Json | null
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          journey_name?: string
+          metadata?: Json | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       learned_items: {
         Row: {
           confidence_threshold: number | null
@@ -312,6 +345,33 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_metrics: {
+        Row: {
+          created_at: string | null
+          id: string
+          metric_name: string
+          percentile: string | null
+          user_id: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metric_name: string
+          percentile?: string | null
+          user_id?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metric_name?: string
+          percentile?: string | null
+          user_id?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           country: string | null
@@ -377,6 +437,33 @@ export type Database = {
           ip_address?: unknown | null
           severity?: string
           user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      stripe_idempotency_log: {
+        Row: {
+          created_at: string | null
+          id: string
+          idempotency_key: string
+          operation_type: string
+          stripe_object_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          idempotency_key: string
+          operation_type: string
+          stripe_object_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          idempotency_key?: string
+          operation_type?: string
+          stripe_object_id?: string | null
           user_id?: string | null
         }
         Relationships: []

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Camera, CameraOff, AlertTriangle } from 'lucide-react';
 import { useCamera } from '@/hooks/useCamera';
+import { useJourneyTrace } from '@/hooks/useJourneyTrace';
 
 interface CameraViewProps {
   onFrame?: (imageData: ImageData) => void;
@@ -29,14 +30,28 @@ export const CameraView: React.FC<CameraViewProps> = ({
     frameRate: 10
   });
 
+  // Track guidance journey
+  const journeyTrace = useJourneyTrace('start_guidance', { 
+    camera: 'environment',
+    resolution: '640x480'
+  });
+
   // Start/stop camera based on isActive prop
   useEffect(() => {
     if (isActive && !camera.isActive) {
       camera.startCamera();
     } else if (!isActive && camera.isActive) {
       camera.stopCamera();
+      journeyTrace.complete({ fps_avg: fps });
     }
   }, [isActive, camera]);
+
+  // Track errors
+  useEffect(() => {
+    if (camera.error) {
+      journeyTrace.fail(camera.error);
+    }
+  }, [camera.error]);
 
   // Handle frame processing
   useEffect(() => {

@@ -56,17 +56,31 @@ export const SubscriptionManager = ({ user }: SubscriptionManagerProps) => {
     setIsCreatingCheckout(true);
 
     try {
-      // In a real implementation, you would call your Stripe checkout Edge Function here
-      toast({
-        title: "Checkout not implemented",
-        description: "Stripe checkout integration requires API keys to be configured",
-        variant: "destructive",
+      const successUrl = `${window.location.origin}/dashboard?checkout=success`;
+      const cancelUrl = `${window.location.origin}/dashboard?checkout=cancelled`;
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          planId,
+          isYearly,
+          successUrl,
+          cancelUrl,
+          idempotencyKey: `checkout-${user.id}-${Date.now()}`,
+        },
       });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
     } catch (error) {
       console.error("Error creating checkout:", error);
       toast({
         title: "Error",
-        description: "Failed to create checkout session",
+        description: "Failed to create checkout session. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -76,17 +90,24 @@ export const SubscriptionManager = ({ user }: SubscriptionManagerProps) => {
 
   const openCustomerPortal = async () => {
     try {
-      // In a real implementation, you would call your customer portal Edge Function here
-      toast({
-        title: "Customer portal not implemented",
-        description: "Stripe customer portal requires API keys to be configured",
-        variant: "destructive",
+      const returnUrl = `${window.location.origin}/dashboard`;
+
+      const { data, error } = await supabase.functions.invoke('customer-portal', {
+        body: { returnUrl },
       });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No portal URL returned');
+      }
     } catch (error) {
       console.error("Error opening customer portal:", error);
       toast({
         title: "Error",
-        description: "Failed to open customer portal",
+        description: "Failed to open billing portal. Please try again.",
         variant: "destructive",
       });
     }

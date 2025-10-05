@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Camera, Search, BookOpen, Zap, Lock, Volume2, Vibrate } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AudioArmer } from '@/utils/AudioArmer';
+import { useJourneyTrace } from '@/hooks/useJourneyTrace';
 
 interface LearnedItem {
   id: string;
@@ -47,6 +48,7 @@ const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
+  const journeyTraceRef = useRef<ReturnType<typeof useJourneyTrace> | null>(null);
 
   // Enhanced ML processing with embeddings simulation
   const processFrame = async () => {
@@ -194,8 +196,16 @@ const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack }) => {
     setMode('search');
     setCurrentSearchResult(null);
     
-    // Announce search start
+    // Start journey trace
     const item = learnedItems.find(i => i.id === itemId);
+    const { useJourneyTrace } = require('@/hooks/useJourneyTrace');
+    const trace = useJourneyTrace('find_item', { 
+      item_name: item?.name,
+      fps 
+    });
+    journeyTraceRef.current = trace;
+    
+    // Announce search start
     if (AudioArmer.isArmed() && item) {
       AudioArmer.announceText(`Searching for ${item.name}`);
     }
@@ -210,6 +220,11 @@ const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack }) => {
       setSelectedItem(null);
       if (AudioArmer.isArmed()) {
         AudioArmer.announceText('Search stopped');
+      }
+      
+      // Complete journey
+      if (journeyTraceRef.current) {
+        journeyTraceRef.current.complete({ duration_s: 60 });
       }
     }, 60000);
   };

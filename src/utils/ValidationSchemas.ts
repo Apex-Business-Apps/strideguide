@@ -74,6 +74,21 @@ export const userSettingsSchema = z.object({
 });
 
 /**
+ * Payment & Subscription Validation
+ */
+export const checkoutInputSchema = z.object({
+  planId: z.string().uuid("Invalid plan ID"),
+  isYearly: z.boolean(),
+  successUrl: z.string().url("Invalid success URL"),
+  cancelUrl: z.string().url("Invalid cancel URL"),
+  idempotencyKey: z.string().optional(),
+});
+
+export const billingPortalSchema = z.object({
+  returnUrl: z.string().url("Invalid return URL"),
+});
+
+/**
  * Sanitization utilities
  */
 export const sanitizers = {

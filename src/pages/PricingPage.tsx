@@ -12,9 +12,43 @@ interface PricingPageProps {
 const PricingPage: React.FC<PricingPageProps> = ({ onBack }) => {
   const { t } = useTranslation();
 
-  const handleUpgrade = () => {
-    // For now, just show a toast - implement actual payment later
-    alert('Upgrade feature coming soon! Contact support for early access.');
+  const handleUpgrade = async () => {
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { data: plans } = await supabase
+        .from('subscription_plans')
+        .select('id')
+        .eq('name', 'Pro')
+        .eq('is_active', true)
+        .single();
+
+      if (!plans) {
+        alert('Pro plan not available. Please contact support.');
+        return;
+      }
+
+      const successUrl = `${window.location.origin}/dashboard?upgrade=success`;
+      const cancelUrl = `${window.location.origin}/pricing?upgrade=cancelled`;
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          planId: plans.id,
+          isYearly: false,
+          successUrl,
+          cancelUrl,
+          idempotencyKey: `upgrade-${Date.now()}`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Upgrade error:', error);
+      alert('Unable to start checkout. Please try again later.');
+    }
   };
 
   const handleGetStrap = () => {
