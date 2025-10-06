@@ -37,6 +37,8 @@ import { ActionPromptModal } from '@/components/modals/ActionPromptModal';
 import { FeatureGate } from '@/components/enterprise/FeatureGate';
 import { HazardNotificationScreen } from '@/components/premium/HazardNotificationScreen';
 import { EnhancedNotificationSystem } from '@/components/premium/EnhancedNotificationSystem';
+import { InstallPromptChip } from '@/components/install/InstallPromptChip';
+import { IOSInstallSheet } from '@/components/install/IOSInstallSheet';
 
 // Hooks and utilities
 import { useAIBot } from '@/hooks/useAIBot';
@@ -599,6 +601,11 @@ const Index: React.FC = () => {
           <UsageMeter />
         </div>
 
+        {/* T-A: Install Prompt Chip - positioned above main actions */}
+        <div className="flex justify-center">
+          <InstallPromptChip />
+        </div>
+
         {/* AI Bot Status */}
         {user && (
           <Card className={`transition-all duration-300 ${
@@ -806,6 +813,9 @@ const Index: React.FC = () => {
           isPremium={isPremiumUser}
         />
       </FeatureGate>
+
+      {/* T-B: iOS Install Sheet - bottom sheet for iOS users */}
+      <IOSInstallSheet />
     </div>
   );
 };
