@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
@@ -19,13 +20,16 @@ export default function ConsentModal() {
   const [open, setOpen] = useState(false);
   const [telemetryConsent, setTelemetryConsent] = useState(false);
   const isEnglish = i18n.language === 'en';
+  const location = useLocation();
+  const skipConsent = location.pathname.startsWith('/auth') || location.pathname.startsWith('/privacy');
 
-  useEffect(() => {
-    const hasConsented = localStorage.getItem(CONSENT_KEY);
-    if (!hasConsented) {
-      setOpen(true);
-    }
-  }, []);
+useEffect(() => {
+  if (skipConsent) return;
+  const hasConsented = localStorage.getItem(CONSENT_KEY);
+  if (!hasConsented) {
+    setOpen(true);
+  }
+}, [skipConsent]);
 
   const handleAccept = () => {
     const consent = {
