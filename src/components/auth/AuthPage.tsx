@@ -48,34 +48,46 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
     setIsLoading(true);
     setError("");
 
+    // Generate correlation ID for this attempt
+    const correlationId = crypto.randomUUID();
+    console.log(`[AUTH-${correlationId}] Sign-in attempt started`);
+
     try {
       const validated = authSchema.pick({ email: true, password: true }).parse({
         email: formData.email,
         password: formData.password,
       });
 
+      console.log(`[AUTH-${correlationId}] Calling Supabase signInWithPassword`);
       const { data, error } = await supabase.auth.signInWithPassword({
         email: validated.email,
         password: validated.password,
       });
 
       if (error) {
-        console.error("Sign-in error:", error);
+        console.error(`[AUTH-${correlationId}] Sign-in error:`, error.status, error.message);
         
-        // Handle specific error types
-        if (error.message.includes("Invalid login credentials")) {
-          setError("Invalid email or password. Please check your credentials and try again.");
-        } else if (error.message.includes("Failed to fetch") || error.message.includes("fetch")) {
-          setError("Network error: Unable to connect to authentication service. Please check your internet connection and try again.");
+        // T-AUTH-05: Specific error messages mapped to failure types
+        if (error.message.includes("Invalid login credentials") || error.status === 400) {
+          setError("Email or password is incorrect.");
+        } else if (error.message.includes("Failed to fetch") || error.name === "TypeError") {
+          // CORS/Preflight failure
+          setError("Sign-in temporarily unavailable. Please refresh and try again.");
+          console.error(`[AUTH-${correlationId}] CORS/Network failure - check Supabase Auth URL configuration`);
+        } else if (error.status === 401 || error.status === 403) {
+          setError("Email or password is incorrect.");
+        } else if (error.message.includes("timeout") || error.status === 504) {
+          setError("Service unreachable. Try again shortly.");
         } else if (error.message.includes("Email not confirmed")) {
           setError("Please verify your email address before signing in. Check your inbox for a confirmation link.");
         } else {
-          setError(`Authentication error: ${error.message}`);
+          setError(`Sign-in failed. Error code: ${correlationId.slice(0, 8)}`);
+          console.error(`[AUTH-${correlationId}] Unexpected error:`, error);
         }
         return;
       }
 
-      console.log("Sign-in successful:", data?.user?.email);
+      console.log(`[AUTH-${correlationId}] Sign-in successful:`, data?.user?.email);
 
       toast({
         title: "Welcome back!",
@@ -84,14 +96,16 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       
       onAuthSuccess();
     } catch (error) {
-      console.error("Unexpected sign-in error:", error);
+      console.error(`[AUTH-${correlationId}] Unexpected sign-in error:`, error);
       
       if (error instanceof z.ZodError) {
         setError(error.errors[0].message);
       } else if (error instanceof TypeError && error.message.includes("fetch")) {
-        setError("Network error: Unable to connect to authentication service. This might be a CORS or network connectivity issue. Please try again.");
+        // T-AUTH-05: CORS/Preflight error
+        setError("Sign-in temporarily unavailable. Please refresh and try again.");
+        console.error(`[AUTH-${correlationId}] Network/CORS error - check preflight OPTIONS response`);
       } else {
-        setError(`An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}. Please try again.`);
+        setError(`Sign-in failed. Error code: ${correlationId.slice(0, 8)}`);
       }
     } finally {
       setIsLoading(false);
@@ -103,11 +117,15 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
     setIsLoading(true);
     setError("");
 
+    // Generate correlation ID for this attempt
+    const correlationId = crypto.randomUUID();
+    console.log(`[AUTH-${correlationId}] Sign-up attempt started`);
+
     try {
       const validated = authSchema.parse(formData);
       const redirectUrl = `${window.location.origin}/`;
 
-      console.log("Attempting sign-up with redirect:", redirectUrl);
+      console.log(`[AUTH-${correlationId}] Calling Supabase signUp with redirect:`, redirectUrl);
 
       const { data, error } = await supabase.auth.signUp({
         email: validated.email,
@@ -122,19 +140,26 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       });
 
       if (error) {
-        console.error("Sign-up error:", error);
+        console.error(`[AUTH-${correlationId}] Sign-up error:`, error.status, error.message);
         
+        // T-AUTH-05: Specific error messages
         if (error.message.includes("User already registered")) {
           setError("An account with this email already exists. Please sign in instead.");
-        } else if (error.message.includes("Failed to fetch") || error.message.includes("fetch")) {
-          setError("Network error: Unable to connect to authentication service. Please check your internet connection and try again.");
+        } else if (error.message.includes("Failed to fetch") || error.name === "TypeError") {
+          setError("Sign-up temporarily unavailable. Please refresh and try again.");
+          console.error(`[AUTH-${correlationId}] CORS/Network failure - check Supabase Auth URL configuration`);
+        } else if (error.status === 422) {
+          setError("Invalid email or password format.");
+        } else if (error.message.includes("timeout") || error.status === 504) {
+          setError("Service unreachable. Try again shortly.");
         } else {
-          setError(`Registration error: ${error.message}`);
+          setError(`Sign-up failed. Error code: ${correlationId.slice(0, 8)}`);
+          console.error(`[AUTH-${correlationId}] Unexpected error:`, error);
         }
         return;
       }
 
-      console.log("Sign-up successful:", data?.user?.email);
+      console.log(`[AUTH-${correlationId}] Sign-up successful:`, data?.user?.email);
 
       toast({
         title: "Account created!",
@@ -143,14 +168,15 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       
       setActiveTab("signin");
     } catch (error) {
-      console.error("Unexpected sign-up error:", error);
+      console.error(`[AUTH-${correlationId}] Unexpected sign-up error:`, error);
       
       if (error instanceof z.ZodError) {
         setError(error.errors[0].message);
       } else if (error instanceof TypeError && error.message.includes("fetch")) {
-        setError("Network error: Unable to connect to authentication service. This might be a CORS or network connectivity issue. Please try again.");
+        setError("Sign-up temporarily unavailable. Please refresh and try again.");
+        console.error(`[AUTH-${correlationId}] Network/CORS error - check preflight OPTIONS response`);
       } else {
-        setError(`An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}. Please try again.`);
+        setError(`Sign-up failed. Error code: ${correlationId.slice(0, 8)}`);
       }
     } finally {
       setIsLoading(false);
