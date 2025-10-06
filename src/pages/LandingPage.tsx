@@ -64,13 +64,13 @@ const LandingPage: React.FC = () => {
       
       <main id="main-content">
         <LandingHero onInstall={handleInstall} onSeePremium={handleSeePremium} />
-        <Showcase />
         <ValuePillars />
+        <Showcase />
         <WhyStrideGuide />
+        <InstallGuide />
         <div id="pricing">
           <PricingSection onInstall={handleInstall} onUpgrade={handleUpgrade} />
         </div>
-        <InstallGuide />
         <Testimonials />
         <FAQ />
         <CTASection onInstall={handleInstall} />
