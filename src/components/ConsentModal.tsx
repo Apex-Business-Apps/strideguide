@@ -21,7 +21,7 @@ export default function ConsentModal() {
   const [telemetryConsent, setTelemetryConsent] = useState(false);
   const isEnglish = i18n.language === 'en';
   const location = useLocation();
-  const skipConsent = location.pathname.startsWith('/auth') || location.pathname.startsWith('/privacy');
+  const skipConsent = location.pathname === '/' || location.pathname.startsWith('/auth') || location.pathname.startsWith('/privacy');
 
 useEffect(() => {
   if (skipConsent) return;
