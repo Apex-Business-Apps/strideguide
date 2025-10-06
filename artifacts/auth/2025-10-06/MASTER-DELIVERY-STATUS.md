@@ -9,9 +9,12 @@
 
 ### 1. Authentication Preflight/CORS ✅ IMPLEMENTATION COMPLETE
 - **B1** (Preflight): Diagnostic script created → `B1-preflight-diagnostic.ts`
-- **B2** (Allowlist): Manual Supabase config required → See `B1-EVIDENCE.md`
+- **B2** (Allowlist): Manual Supabase config required → See `B2-SUPABASE-MANUAL-CONFIG.md`
 - **B3** (Cookies): Verified complete → See `B3-SESSION-VALIDATION.md`
-- **B4** (Errors): Already implemented in AuthPage.tsx (correlation IDs, specific messages)
+- **B4** (Errors): ✅ COMPLETE → See `B4-EVIDENCE.md`
+  - ProductionLogger integration
+  - Correlation ID logging
+  - Actionable error messages (CORS, 401/403, timeout)
 
 **Next Step**: User must configure Supabase Dashboard Auth URLs
 

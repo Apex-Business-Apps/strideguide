@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
 import { z } from "zod";
+import { logger } from "@/utils/ProductionLogger";
 
 const authSchema = z.object({
   email: z.string().email("Invalid email address").max(255),
@@ -48,9 +49,9 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
     setIsLoading(true);
     setError("");
 
-    // Generate correlation ID for this attempt
+    // B4: Generate correlation ID for this attempt
     const correlationId = crypto.randomUUID();
-    console.log(`[AUTH-${correlationId}] Sign-in attempt started`);
+    logger.info("Sign-in attempt started", { correlationId, action: "signin" });
 
     try {
       const validated = authSchema.pick({ email: true, password: true }).parse({
@@ -58,22 +59,31 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
         password: formData.password,
       });
 
-      console.log(`[AUTH-${correlationId}] Calling Supabase signInWithPassword`);
+      logger.info("Calling Supabase signInWithPassword", { correlationId });
       const { data, error } = await supabase.auth.signInWithPassword({
         email: validated.email,
         password: validated.password,
       });
 
       if (error) {
-        console.error(`[AUTH-${correlationId}] Sign-in error:`, error.status, error.message);
+        // B4: Log error with correlation ID (sensitive data auto-sanitized by ProductionLogger)
+        logger.error("Sign-in error", { 
+          correlationId, 
+          status: error.status, 
+          errorName: error.name,
+          errorMessage: error.message 
+        });
         
-        // T-AUTH-05: Specific error messages mapped to failure types
+        // B4: Map errors to actionable user messages
         if (error.message.includes("Invalid login credentials") || error.status === 400) {
           setError("Email or password is incorrect.");
         } else if (error.message.includes("Failed to fetch") || error.name === "TypeError") {
           // CORS/Preflight failure
           setError("Sign-in temporarily unavailable. Please refresh and try again.");
-          console.error(`[AUTH-${correlationId}] CORS/Network failure - check Supabase Auth URL configuration`);
+          logger.error("CORS/Network failure detected", { 
+            correlationId, 
+            hint: "Check Supabase Auth URL configuration" 
+          });
         } else if (error.status === 401 || error.status === 403) {
           setError("Email or password is incorrect.");
         } else if (error.message.includes("timeout") || error.status === 504) {
@@ -81,13 +91,14 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
         } else if (error.message.includes("Email not confirmed")) {
           setError("Please verify your email address before signing in. Check your inbox for a confirmation link.");
         } else {
-          setError(`Sign-in failed. Error code: ${correlationId.slice(0, 8)}`);
-          console.error(`[AUTH-${correlationId}] Unexpected error:`, error);
+          // B4: Show correlation ID to user for support reference
+          setError(`Sign-in failed. Reference: ${correlationId.slice(0, 8)}`);
+          logger.error("Unexpected sign-in error", { correlationId, error });
         }
         return;
       }
 
-      console.log(`[AUTH-${correlationId}] Sign-in successful:`, data?.user?.email);
+      logger.info("Sign-in successful", { correlationId, userEmail: data?.user?.email });
 
       toast({
         title: "Welcome back!",
@@ -96,16 +107,19 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       
       onAuthSuccess();
     } catch (error) {
-      console.error(`[AUTH-${correlationId}] Unexpected sign-in error:`, error);
+      logger.error("Unexpected sign-in exception", { correlationId, error });
       
       if (error instanceof z.ZodError) {
         setError(error.errors[0].message);
       } else if (error instanceof TypeError && error.message.includes("fetch")) {
-        // T-AUTH-05: CORS/Preflight error
+        // B4: CORS/Preflight error
         setError("Sign-in temporarily unavailable. Please refresh and try again.");
-        console.error(`[AUTH-${correlationId}] Network/CORS error - check preflight OPTIONS response`);
+        logger.error("Network/CORS error", { 
+          correlationId, 
+          hint: "Check preflight OPTIONS response" 
+        });
       } else {
-        setError(`Sign-in failed. Error code: ${correlationId.slice(0, 8)}`);
+        setError(`Sign-in failed. Reference: ${correlationId.slice(0, 8)}`);
       }
     } finally {
       setIsLoading(false);
@@ -117,15 +131,15 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
     setIsLoading(true);
     setError("");
 
-    // Generate correlation ID for this attempt
+    // B4: Generate correlation ID for this attempt
     const correlationId = crypto.randomUUID();
-    console.log(`[AUTH-${correlationId}] Sign-up attempt started`);
+    logger.info("Sign-up attempt started", { correlationId, action: "signup" });
 
     try {
       const validated = authSchema.parse(formData);
       const redirectUrl = `${window.location.origin}/`;
 
-      console.log(`[AUTH-${correlationId}] Calling Supabase signUp with redirect:`, redirectUrl);
+      logger.info("Calling Supabase signUp", { correlationId, redirectUrl });
 
       const { data, error } = await supabase.auth.signUp({
         email: validated.email,
@@ -140,26 +154,35 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       });
 
       if (error) {
-        console.error(`[AUTH-${correlationId}] Sign-up error:`, error.status, error.message);
+        // B4: Log error with correlation ID
+        logger.error("Sign-up error", { 
+          correlationId, 
+          status: error.status, 
+          errorName: error.name,
+          errorMessage: error.message 
+        });
         
-        // T-AUTH-05: Specific error messages
+        // B4: Map errors to actionable user messages
         if (error.message.includes("User already registered")) {
           setError("An account with this email already exists. Please sign in instead.");
         } else if (error.message.includes("Failed to fetch") || error.name === "TypeError") {
           setError("Sign-up temporarily unavailable. Please refresh and try again.");
-          console.error(`[AUTH-${correlationId}] CORS/Network failure - check Supabase Auth URL configuration`);
+          logger.error("CORS/Network failure detected", { 
+            correlationId, 
+            hint: "Check Supabase Auth URL configuration" 
+          });
         } else if (error.status === 422) {
           setError("Invalid email or password format.");
         } else if (error.message.includes("timeout") || error.status === 504) {
           setError("Service unreachable. Try again shortly.");
         } else {
-          setError(`Sign-up failed. Error code: ${correlationId.slice(0, 8)}`);
-          console.error(`[AUTH-${correlationId}] Unexpected error:`, error);
+          setError(`Sign-up failed. Reference: ${correlationId.slice(0, 8)}`);
+          logger.error("Unexpected sign-up error", { correlationId, error });
         }
         return;
       }
 
-      console.log(`[AUTH-${correlationId}] Sign-up successful:`, data?.user?.email);
+      logger.info("Sign-up successful", { correlationId, userEmail: data?.user?.email });
 
       toast({
         title: "Account created!",
@@ -168,15 +191,18 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       
       setActiveTab("signin");
     } catch (error) {
-      console.error(`[AUTH-${correlationId}] Unexpected sign-up error:`, error);
+      logger.error("Unexpected sign-up exception", { correlationId, error });
       
       if (error instanceof z.ZodError) {
         setError(error.errors[0].message);
       } else if (error instanceof TypeError && error.message.includes("fetch")) {
         setError("Sign-up temporarily unavailable. Please refresh and try again.");
-        console.error(`[AUTH-${correlationId}] Network/CORS error - check preflight OPTIONS response`);
+        logger.error("Network/CORS error", { 
+          correlationId, 
+          hint: "Check preflight OPTIONS response" 
+        });
       } else {
-        setError(`Sign-up failed. Error code: ${correlationId.slice(0, 8)}`);
+        setError(`Sign-up failed. Reference: ${correlationId.slice(0, 8)}`);
       }
     } finally {
       setIsLoading(false);
