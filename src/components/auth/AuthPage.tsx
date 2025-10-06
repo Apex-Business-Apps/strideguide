@@ -54,19 +54,28 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
         password: formData.password,
       });
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: validated.email,
         password: validated.password,
       });
 
       if (error) {
+        console.error("Sign-in error:", error);
+        
+        // Handle specific error types
         if (error.message.includes("Invalid login credentials")) {
           setError("Invalid email or password. Please check your credentials and try again.");
+        } else if (error.message.includes("Failed to fetch") || error.message.includes("fetch")) {
+          setError("Network error: Unable to connect to authentication service. Please check your internet connection and try again.");
+        } else if (error.message.includes("Email not confirmed")) {
+          setError("Please verify your email address before signing in. Check your inbox for a confirmation link.");
         } else {
-          setError(error.message);
+          setError(`Authentication error: ${error.message}`);
         }
         return;
       }
+
+      console.log("Sign-in successful:", data?.user?.email);
 
       toast({
         title: "Welcome back!",
@@ -75,10 +84,14 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       
       onAuthSuccess();
     } catch (error) {
+      console.error("Unexpected sign-in error:", error);
+      
       if (error instanceof z.ZodError) {
         setError(error.errors[0].message);
+      } else if (error instanceof TypeError && error.message.includes("fetch")) {
+        setError("Network error: Unable to connect to authentication service. This might be a CORS or network connectivity issue. Please try again.");
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        setError(`An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}. Please try again.`);
       }
     } finally {
       setIsLoading(false);
@@ -94,7 +107,9 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       const validated = authSchema.parse(formData);
       const redirectUrl = `${window.location.origin}/`;
 
-      const { error } = await supabase.auth.signUp({
+      console.log("Attempting sign-up with redirect:", redirectUrl);
+
+      const { data, error } = await supabase.auth.signUp({
         email: validated.email,
         password: validated.password,
         options: {
@@ -107,13 +122,19 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       });
 
       if (error) {
+        console.error("Sign-up error:", error);
+        
         if (error.message.includes("User already registered")) {
           setError("An account with this email already exists. Please sign in instead.");
+        } else if (error.message.includes("Failed to fetch") || error.message.includes("fetch")) {
+          setError("Network error: Unable to connect to authentication service. Please check your internet connection and try again.");
         } else {
-          setError(error.message);
+          setError(`Registration error: ${error.message}`);
         }
         return;
       }
+
+      console.log("Sign-up successful:", data?.user?.email);
 
       toast({
         title: "Account created!",
@@ -122,10 +143,14 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       
       setActiveTab("signin");
     } catch (error) {
+      console.error("Unexpected sign-up error:", error);
+      
       if (error instanceof z.ZodError) {
         setError(error.errors[0].message);
+      } else if (error instanceof TypeError && error.message.includes("fetch")) {
+        setError("Network error: Unable to connect to authentication service. This might be a CORS or network connectivity issue. Please try again.");
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        setError(`An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}. Please try again.`);
       }
     } finally {
       setIsLoading(false);
