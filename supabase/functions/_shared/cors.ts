@@ -3,12 +3,8 @@
 
 export const ALLOWED_ORIGINS = [
   'https://yrndifsbsmpvmpudglcc.supabase.co',
-  // Add your production domain when deployed:
-  // 'https://your-custom-domain.com',
-  // Add your preview/staging domain:
-  // 'https://your-project.lovable.app',
-  // For local development (remove in production):
-  // 'http://localhost:8080',
+  'https://strideguide.lovable.app',
+  'http://localhost:8080',
 ];
 
 export function getAllowedOrigin(requestOrigin: string | null): string {
