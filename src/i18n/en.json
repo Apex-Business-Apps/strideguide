@@ -233,5 +233,11 @@
   "sos.cancelled": "SOS cancelled",
   "sos.triggered": "Emergency alert activated",
   "sos.messageTemplate": "EMERGENCY: I need help. Time: {timestamp}. Location: {location}",
-  "sos.locationPlaceholder": "Location services unavailable"
+  "sos.locationPlaceholder": "Location services unavailable",
+  
+  "badge_free": "Free trial",
+  "trial_footnote": "Trial includes all features. You can cancel anytime.",
+  "trial_cta": "Start your free trial",
+  "faq_trial_q": "Is there a free version?",
+  "faq_trial_a": "We offer a free trial so you can test everything. After the trial, choose a paid plan or switch to limited Free Core features."
 }

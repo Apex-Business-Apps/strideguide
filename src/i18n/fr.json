@@ -121,5 +121,11 @@
   "sos.cancelled": "SOS annulé",
   "sos.triggered": "Alerte d'urgence activée",
   "sos.messageTemplate": "URGENCE: J'ai besoin d'aide. Heure: {timestamp}. Lieu: {location}",
-  "sos.locationPlaceholder": "Services de localisation indisponibles"
+  "sos.locationPlaceholder": "Services de localisation indisponibles",
+  
+  "badge_free": "Essai gratuit",
+  "trial_footnote": "L'essai inclut toutes les fonctions. Vous pouvez annuler à tout moment.",
+  "trial_cta": "Démarrer votre essai gratuit",
+  "faq_trial_q": "Existe-t-il une version gratuite ?",
+  "faq_trial_a": "Nous proposons un essai gratuit pour tout essayer. À la fin, choisissez un forfait payant ou passez aux fonctions Cœur Gratuit limitées."
 }

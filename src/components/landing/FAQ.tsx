@@ -17,14 +17,8 @@ export const FAQ: React.FC = () => {
       a: 'Yes! StrideGuide processes everything on your device. Once installed, you never need an internet connection for obstacle detection, voice guidance, or any core features. Perfect for users without data plans or in areas with poor reception.' 
     },
     { 
-      q: 'Is there a free version?', 
-      a: 'We offer a free trial so you can test everything. After the trial, choose a paid plan or switch to limited Free Core features.' 
-    },
-    { 
-      qFr: 'Existe-t-il une version gratuite ?',
-      aFr: 'Nous proposons un essai gratuit pour tout essayer. À la fin, choisissez un forfait payant ou passez aux fonctions Cœur Gratuit limitées.',
-      q: 'Is there a free version?', 
-      a: 'We offer a free trial so you can test everything. After the trial, choose a paid plan or switch to limited Free Core features.' 
+      q: t('faq_trial_q'), 
+      a: t('faq_trial_a')
     },
     { 
       q: 'Will this work with my screen reader?', 
