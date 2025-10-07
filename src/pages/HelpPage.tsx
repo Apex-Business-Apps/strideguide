@@ -15,26 +15,26 @@ const HelpPage: React.FC<HelpPageProps> = ({ onBack }) => {
   const helpSections = [
     {
       icon: Shield,
-      title: t('help.privacy.title'),
-      description: t('help.privacy.description'),
+      title: 'Your Privacy is Protected',
+      description: 'All vision processing happens on your device. Camera images never leave your phone. No cloud uploads, no data tracking.',
       color: 'text-success'
     },
     {
       icon: Wifi,
-      title: t('help.offline.title'),
-      description: t('help.offline.description'),
+      title: 'Works 100% Offline',
+      description: 'Core features work without internet. Perfect for users without data plans or in areas with poor reception.',
       color: 'text-primary'
     },
     {
       icon: Volume2,
-      title: t('help.audio.title'),
-      description: t('help.audio.description'),
+      title: 'Clear Audio Guidance',
+      description: 'Voice directions and audio cues guide you safely. Works with headphones or phone speaker. Screen reader compatible.',
       color: 'text-accent'
     },
     {
       icon: Eye,
-      title: t('help.accessibility.title'),
-      description: t('help.accessibility.description'),
+      title: 'Built for Accessibility',
+      description: 'Large touch targets, high contrast, voice commands, and full VoiceOver/TalkBack support for blind and low vision users.',
       color: 'text-warning'
     }
   ];
@@ -58,7 +58,7 @@ const HelpPage: React.FC<HelpPageProps> = ({ onBack }) => {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold">{t('help.title')}</h1>
+          <h1 className="text-2xl font-bold">Help & Support</h1>
         </div>
 
         {/* Help Sections */}
