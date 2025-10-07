@@ -9,6 +9,7 @@ export interface RuntimeConfig {
   enablePayments: boolean;
   enableNewAuth: boolean;
   enableWebhooks: boolean;
+  enableEdgeCheck: boolean; // Crisis toggle to bypass Edge Functions
   ui?: {
     enablePWAInstallChip?: boolean;
     enableIOSA2HSHelper?: boolean;
@@ -27,6 +28,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   enablePayments: false,
   enableNewAuth: false,
   enableWebhooks: false,
+  enableEdgeCheck: false,
   ui: {
     enablePWAInstallChip: true,
     enableIOSA2HSHelper: true,
@@ -75,6 +77,7 @@ export async function loadRuntimeConfig(): Promise<RuntimeConfig> {
         enablePayments: Boolean(config.enablePayments),
         enableNewAuth: Boolean(config.enableNewAuth),
         enableWebhooks: Boolean(config.enableWebhooks),
+        enableEdgeCheck: Boolean(config.enableEdgeCheck),
         ui: {
           enablePWAInstallChip: config.ui?.enablePWAInstallChip ?? true,
           enableIOSA2HSHelper: config.ui?.enableIOSA2HSHelper ?? true,
@@ -138,5 +141,6 @@ export function getFlagSnapshot(): Record<string, boolean> {
     payments: cachedConfig.enablePayments,
     newAuth: cachedConfig.enableNewAuth,
     webhooks: cachedConfig.enableWebhooks,
+    edgeCheck: cachedConfig.enableEdgeCheck,
   };
 }

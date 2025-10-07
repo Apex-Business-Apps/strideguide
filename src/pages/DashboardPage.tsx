@@ -11,6 +11,7 @@ import { AdminSetup } from "@/components/auth/AdminSetup";
 import { FeatureGate } from "@/components/enterprise/FeatureGate";
 import SettingsDashboard from "@/components/SettingsDashboard";
 import { Logo } from "@/components/Logo";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 interface DashboardPageProps {
   user: User;
@@ -22,12 +23,19 @@ export default function DashboardPage({ user, onSignOut }: DashboardPageProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [userRole, setUserRole] = useState<string>('user');
 
+  const flags = useFeatureFlags();
+
   useEffect(() => {
     checkUserRole();
-  }, [user]);
+  }, [user, flags.enableEdgeCheck]);
 
   const checkUserRole = async () => {
     try {
+      // Bypass edge calls if disabled
+      if (!flags.enableEdgeCheck) {
+        setUserRole('user');
+        return;
+      }
       // Server-side admin authorization check
       const { data: session } = await supabase.auth.getSession();
       

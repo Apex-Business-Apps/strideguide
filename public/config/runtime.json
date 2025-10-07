@@ -2,6 +2,7 @@
   "enablePayments": false,
   "enableNewAuth": false,
   "enableWebhooks": false,
+  "enableEdgeCheck": false,
   "ui": {
     "enablePWAInstallChip": true,
     "enableIOSA2HSHelper": true

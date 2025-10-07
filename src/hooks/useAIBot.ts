@@ -3,6 +3,7 @@ import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/utils/ProductionLogger';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 
 interface AIBotMessage {
   id: string;
@@ -25,6 +26,7 @@ const RECONNECTION_DELAY = 2000;
 
 export const useAIBot = (user: User | null) => {
   const { toast } = useToast();
+  const flags = useFeatureFlags();
   const [state, setState] = useState<AIBotState>({
     isActive: false,
     isConnected: false,
@@ -69,19 +71,22 @@ export const useAIBot = (user: User | null) => {
       // Simulate AI service initialization
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Test AI chat function availability
-      try {
-        const { data: testData, error: functionError } = await supabase.functions.invoke('ai-chat', {
-          body: { messages: [{ role: 'user', content: 'test' }] }
-        });
-        
-        if (functionError) {
-          logger.warn('AI chat function test failed', { error: functionError.message });
-        } else {
-          logger.debug('AI chat function test successful');
+      // Test AI chat function availability (skipped if edge disabled)
+      if (flags.enableEdgeCheck) {
+        try {
+          const { data: testData, error: functionError } = await supabase.functions.invoke('ai-chat', {
+            body: { messages: [{ role: 'user', content: 'test' }] }
+          });
+          if (functionError) {
+            logger.warn('AI chat function test failed', { error: functionError.message });
+          } else {
+            logger.debug('AI chat function test successful');
+          }
+        } catch (err) {
+          logger.debug('AI chat function not available', { error: err });
         }
-      } catch (err) {
-        logger.debug('AI chat function not available', { error: err });
+      } else {
+        logger.info('AI chat edge calls disabled via feature flag');
       }
 
       setState(prev => ({ 
@@ -128,7 +133,7 @@ export const useAIBot = (user: User | null) => {
     } finally {
       initializationRef.current = false;
     }
-  }, [user, state.connectionAttempts, toast]);
+  }, [user, state.connectionAttempts, toast, flags.enableEdgeCheck]);
 
   // Initialize bot when user changes or component mounts
   useEffect(() => {
@@ -171,7 +176,7 @@ export const useAIBot = (user: User | null) => {
     if (!state.isConnected) {
       toast({
         title: "AI Assistant Not Ready",
-        description: "Please wait for the AI assistant to initialize",
+        description: flags.enableEdgeCheck ? "Please wait for the AI assistant to initialize" : "AI temporarily disabled",
         variant: "destructive",
       });
       return;
@@ -206,6 +211,9 @@ export const useAIBot = (user: User | null) => {
     }));
 
     try {
+      if (!flags.enableEdgeCheck) {
+        throw new Error('Edge functions disabled');
+      }
       // Call AI chat edge function
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
@@ -239,7 +247,7 @@ export const useAIBot = (user: User | null) => {
       
       toast({
         title: "Message Failed",
-        description: "Unable to send message to AI assistant",
+        description: flags.enableEdgeCheck ? "Unable to send message to AI assistant" : "AI temporarily disabled",
         variant: "destructive",
       });
     }

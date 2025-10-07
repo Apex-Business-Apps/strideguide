@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/SEOHead';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 
 interface PricingPageProps {
   onBack: () => void;
@@ -12,9 +13,11 @@ interface PricingPageProps {
 
 const PricingPage: React.FC<PricingPageProps> = ({ onBack }) => {
   const { t } = useTranslation();
+  const flags = useFeatureFlags();
 
   const handleUpgrade = async () => {
     try {
+      if (!flags.enableEdgeCheck) throw new Error('Edge functions disabled');
       const { supabase } = await import('@/integrations/supabase/client');
       const { data: plans } = await supabase
         .from('subscription_plans')
@@ -48,7 +51,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onBack }) => {
       }
     } catch (error) {
       console.error('Upgrade error:', error);
-      alert('Unable to start checkout. Please try again later.');
+      alert('Upgrade temporarily unavailable. Please try again later.');
     }
   };
 

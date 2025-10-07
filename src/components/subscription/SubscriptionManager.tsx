@@ -18,7 +18,7 @@ interface SubscriptionManagerProps {
 
 export const SubscriptionManager = ({ user }: SubscriptionManagerProps) => {
   const { toast } = useToast();
-  const { isPaymentsEnabled } = useFeatureFlags();
+  const { isPaymentsEnabled, enableEdgeCheck } = useFeatureFlags() as any;
   const { subscription, isLoading, refreshSubscription } = useSubscription(user);
   const [showPricing, setShowPricing] = useState(false);
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
@@ -70,6 +70,9 @@ export const SubscriptionManager = ({ user }: SubscriptionManagerProps) => {
 
     try {
       await telemetry.trackWithLatency('checkout_open', async () => {
+        if (!enableEdgeCheck) {
+          throw new Error('Edge functions disabled');
+        }
         const successUrl = `${window.location.origin}/dashboard?checkout=success`;
         const cancelUrl = `${window.location.origin}/dashboard?checkout=cancelled`;
 
@@ -94,8 +97,8 @@ export const SubscriptionManager = ({ user }: SubscriptionManagerProps) => {
     } catch (error) {
       console.error("Error creating checkout:", error);
       toast({
-        title: "Error",
-        description: "Failed to create checkout session. Please try again.",
+        title: "Checkout Unavailable",
+        description: enableEdgeCheck ? "Failed to create checkout session. Please try again." : "Disabled in crisis mode.",
         variant: "destructive",
       });
     } finally {
@@ -116,6 +119,9 @@ export const SubscriptionManager = ({ user }: SubscriptionManagerProps) => {
 
     try {
       await telemetry.trackWithLatency('portal_open', async () => {
+        if (!enableEdgeCheck) {
+          throw new Error('Edge functions disabled');
+        }
         const returnUrl = `${window.location.origin}/dashboard`;
 
         const { data, error } = await supabase.functions.invoke('customer-portal', {
@@ -133,8 +139,8 @@ export const SubscriptionManager = ({ user }: SubscriptionManagerProps) => {
     } catch (error) {
       console.error("Error opening customer portal:", error);
       toast({
-        title: "Error",
-        description: "Failed to open billing portal. Please try again.",
+        title: "Billing Portal Unavailable",
+        description: enableEdgeCheck ? "Failed to open billing portal. Please try again." : "Disabled in crisis mode.",
         variant: "destructive",
       });
     }
