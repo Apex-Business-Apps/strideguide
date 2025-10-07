@@ -1,10 +1,13 @@
 /**
- * MLProcessor - On-device machine learning for lost item finding
- * Uses ONNX Runtime Web with WebGPU/WebGL fallback
+ * MLProcessor - PRODUCTION On-device Machine Learning
+ * Uses ONNX Runtime Web with WebGPU/WebGL for real computer vision
+ * NO MOCKS - Real inference only
  */
 
+import * as ort from 'onnxruntime-web';
+
 interface MLModel {
-  session: any; // ONNX InferenceSession
+  session: ort.InferenceSession;
   inputName: string;
   outputName: string;
 }
@@ -15,174 +18,161 @@ interface EmbeddingResult {
 }
 
 interface DetectionResult {
-  bbox: [number, number, number, number]; // [x, y, width, height]
+  bbox: [number, number, number, number];
   confidence: number;
   embedding: Float32Array;
 }
 
 class MLProcessorClass {
-  private embeddingModel: MLModel | null = null;
-  private isInitialized = false;
-  private isLoading = false;
+  private model: MLModel | null = null;
+  private initialized = false;
 
-  async initialize(): Promise<void> {
-    if (this.isInitialized || this.isLoading) return;
-    
-    this.isLoading = true;
+  private async initialize(): Promise<void> {
+    if (this.initialized) return;
 
     try {
-      // Dynamic import to avoid bundling ONNX Runtime Web if not needed
-      const ort = await import('onnxruntime-web');
+      console.log('[MLProcessor] Initializing PRODUCTION ML models...');
       
-      // Configure execution providers (WebGPU preferred, WebGL fallback)
-      const providers = [];
+      // Configure ONNX Runtime for production
+      ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.0/dist/';
+      ort.env.wasm.numThreads = 1;
+      ort.env.webgpu.powerPreference = 'low-power';
+
+      // Use MobileNetV2 for real image embeddings (224x224 input)
+      // This is a production-ready model optimized for mobile/web
+      const modelUrl = 'https://huggingface.co/Xenova/mobilenet_v2_1.0_224/resolve/main/onnx/model.onnx';
       
-      if ('gpu' in navigator) {
-        providers.push('webgpu');
+      console.log('[MLProcessor] Downloading MobileNetV2 from HuggingFace...');
+      const modelBuffer = await fetch(modelUrl).then(async r => {
+        if (!r.ok) throw new Error(`Model download failed: ${r.status}`);
+        return r.arrayBuffer();
+      });
+
+      console.log('[MLProcessor] Creating inference session...');
+      // Try WebGPU -> WebGL -> WASM
+      const providers = ['webgpu', 'webgl', 'wasm'] as const;
+      let lastError: Error | null = null;
+
+      for (const provider of providers) {
+        try {
+          const session = await ort.InferenceSession.create(modelBuffer, {
+            executionProviders: [provider],
+            graphOptimizationLevel: 'all',
+            enableMemPattern: true,
+            enableCpuMemArena: true,
+          });
+
+          const inputNames = session.inputNames;
+          const outputNames = session.outputNames;
+
+          this.model = {
+            session,
+            inputName: inputNames[0],
+            outputName: outputNames[0],
+          };
+
+          console.log(`[MLProcessor] ✓ REAL MODEL loaded with ${provider} backend`);
+          console.log(`[MLProcessor] Input: ${this.model.inputName}, Output: ${this.model.outputName}`);
+          this.initialized = true;
+          return;
+        } catch (err) {
+          lastError = err as Error;
+          console.warn(`[MLProcessor] ${provider} failed:`, err);
+        }
       }
-      providers.push('webgl', 'wasm');
 
-      ort.env.wasm.wasmPaths = '/models/';
-      
-      // Load lightweight embedding model (MobileNet-style)
-      const modelUrl = '/models/mobile_embedding_model.onnx';
-      
-      try {
-        const session = await ort.InferenceSession.create(modelUrl, {
-          executionProviders: providers
-        });
-
-        this.embeddingModel = {
-          session,
-          inputName: session.inputNames[0],
-          outputName: session.outputNames[0]
-        };
-
-        this.isInitialized = true;
-        console.log('ML Processor initialized with providers:', providers);
-      } catch (error) {
-        console.warn('Failed to load ONNX model, using simulated embeddings:', error);
-        // Fall back to simulated processing for demo
-        this.isInitialized = true;
-      }
+      throw new Error(`CRITICAL: All ML backends failed. Last error: ${lastError?.message}`);
     } catch (error) {
-      console.error('Failed to initialize ML processor:', error);
-      // Still mark as initialized for demo purposes
-      this.isInitialized = true;
-    } finally {
-      this.isLoading = false;
+      console.error('[MLProcessor] CRITICAL: Model initialization FAILED:', error);
+      throw error;
     }
   }
 
   async computeEmbedding(imageData: ImageData): Promise<EmbeddingResult> {
-    if (!this.isInitialized) {
-      await this.initialize();
+    await this.initialize();
+
+    if (!this.model) {
+      throw new Error('CRITICAL: ML model not initialized - cannot generate embeddings');
     }
 
     try {
-      if (this.embeddingModel) {
-        return await this.computeRealEmbedding(imageData);
-      } else {
-        return this.computeSimulatedEmbedding(imageData);
-      }
-    } catch (error) {
-      console.error('Embedding computation failed:', error);
-      return this.computeSimulatedEmbedding(imageData);
-    }
-  }
-
-  private async computeRealEmbedding(imageData: ImageData): Promise<EmbeddingResult> {
-    if (!this.embeddingModel) {
-      throw new Error('Model not loaded');
-    }
-
-    // Preprocess image data
-    const preprocessed = this.preprocessImage(imageData);
-    
-    // Run inference
-    const feeds = { [this.embeddingModel.inputName]: preprocessed };
-    const results = await this.embeddingModel.session.run(feeds);
-    const output = results[this.embeddingModel.outputName];
-
-    return {
-      embedding: new Float32Array(output.data),
-      confidence: 0.95 // High confidence for real model
-    };
-  }
-
-  private computeSimulatedEmbedding(imageData: ImageData): EmbeddingResult {
-    // Create a simulated embedding based on image characteristics
-    const { data, width, height } = imageData;
-    const embedding = new Float32Array(128); // 128-dimensional embedding
-
-    // Compute basic image statistics for simulation
-    let avgR = 0, avgG = 0, avgB = 0;
-    let contrast = 0;
-    
-    for (let i = 0; i < data.length; i += 4) {
-      avgR += data[i];
-      avgG += data[i + 1];
-      avgB += data[i + 2];
-    }
-    
-    const pixelCount = data.length / 4;
-    avgR /= pixelCount;
-    avgG /= pixelCount;
-    avgB /= pixelCount;
-
-    // Fill embedding with deterministic but varied values
-    for (let i = 0; i < 128; i++) {
-      const colorComponent = (avgR + avgG + avgB) / 3;
-      const spatial = Math.sin(i * 0.1 + colorComponent * 0.01);
-      const contrast_component = Math.cos(i * 0.05 + contrast * 0.02);
+      const startTime = performance.now();
+      const inputTensor = this.preprocessImage(imageData);
       
-      embedding[i] = (spatial + contrast_component) * 0.5;
-    }
+      const feeds = { [this.model.inputName]: inputTensor };
+      const results = await this.model.session.run(feeds);
+      const output = results[this.model.outputName];
 
-    return {
-      embedding,
-      confidence: 0.8 // Moderate confidence for simulation
-    };
+      // MobileNetV2 outputs 1280-dimensional embeddings
+      const embedding = new Float32Array(output.data as Float32Array);
+      
+      // L2 normalize
+      const magnitude = Math.sqrt(
+        embedding.reduce((sum, val) => sum + val * val, 0)
+      );
+      
+      if (magnitude > 0) {
+        for (let i = 0; i < embedding.length; i++) {
+          embedding[i] /= magnitude;
+        }
+      }
+
+      const inferenceTime = performance.now() - startTime;
+      const confidence = Math.min(magnitude / 50, 1.0);
+
+      console.log('[MLProcessor] ✓ REAL embedding:', {
+        dims: embedding.length,
+        confidence: confidence.toFixed(3),
+        ms: inferenceTime.toFixed(1),
+      });
+
+      return { embedding, confidence };
+    } catch (error) {
+      console.error('[MLProcessor] CRITICAL: Inference FAILED:', error);
+      throw error;
+    }
   }
 
-  private preprocessImage(imageData: ImageData): any {
-    // Convert ImageData to model input format (224x224 RGB)
+  private preprocessImage(imageData: ImageData): ort.Tensor {
     const targetSize = 224;
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d')!;
-    
     canvas.width = targetSize;
     canvas.height = targetSize;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
     
-    // Draw and resize image
     const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d')!;
     tempCanvas.width = imageData.width;
     tempCanvas.height = imageData.height;
+    const tempCtx = tempCanvas.getContext('2d')!;
     tempCtx.putImageData(imageData, 0, 0);
     
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(tempCanvas, 0, 0, targetSize, targetSize);
-    const resizedData = ctx.getImageData(0, 0, targetSize, targetSize);
+    const resizedImageData = ctx.getImageData(0, 0, targetSize, targetSize);
 
-    // Convert to normalized float array [1, 3, 224, 224] format
+    // NCHW format: [1, 3, 224, 224]
     const float32Data = new Float32Array(3 * targetSize * targetSize);
-    
+    const { data } = resizedImageData;
+
+    // ImageNet normalization (required for MobileNetV2)
+    const mean = [0.485, 0.456, 0.406];
+    const std = [0.229, 0.224, 0.225];
+
     for (let i = 0; i < targetSize * targetSize; i++) {
-      const pixel = i * 4;
-      // Normalize RGB values to [0, 1] and separate channels
-      float32Data[i] = resizedData.data[pixel] / 255.0; // R
-      float32Data[i + targetSize * targetSize] = resizedData.data[pixel + 1] / 255.0; // G
-      float32Data[i + 2 * targetSize * targetSize] = resizedData.data[pixel + 2] / 255.0; // B
+      const pixelOffset = i * 4;
+      
+      float32Data[i] = (data[pixelOffset] / 255.0 - mean[0]) / std[0];
+      float32Data[targetSize * targetSize + i] = (data[pixelOffset + 1] / 255.0 - mean[1]) / std[1];
+      float32Data[2 * targetSize * targetSize + i] = (data[pixelOffset + 2] / 255.0 - mean[2]) / std[2];
     }
 
-    // Return as ONNX tensor format
-    const ort = require('onnxruntime-web');
     return new ort.Tensor('float32', float32Data, [1, 3, targetSize, targetSize]);
   }
 
   computeCosineSimilarity(embedding1: Float32Array, embedding2: Float32Array): number {
     if (embedding1.length !== embedding2.length) {
-      throw new Error('Embeddings must have the same length');
+      throw new Error('Embeddings must have same length');
     }
 
     let dotProduct = 0;
@@ -198,39 +188,33 @@ class MLProcessorClass {
     norm1 = Math.sqrt(norm1);
     norm2 = Math.sqrt(norm2);
 
-    if (norm1 === 0 || norm2 === 0) {
-      return 0;
-    }
-
+    if (norm1 === 0 || norm2 === 0) return 0;
     return dotProduct / (norm1 * norm2);
   }
 
-  // Simulate object detection for demo (would use real detection model in production)
-  simulateDetection(imageData: ImageData, targetEmbedding: Float32Array): DetectionResult[] {
+  async detectInRegions(imageData: ImageData, targetEmbedding: Float32Array): Promise<DetectionResult[]> {
     const results: DetectionResult[] = [];
-    
-    // Simulate 1-3 detections in different parts of the image
-    const numDetections = Math.floor(Math.random() * 3) + 1;
-    
-    for (let i = 0; i < numDetections; i++) {
-      const x = Math.random() * (imageData.width - 100);
-      const y = Math.random() * (imageData.height - 100);
-      const width = 50 + Math.random() * 100;
-      const height = 50 + Math.random() * 100;
-      
-      // Extract region and compute embedding
-      const regionData = this.extractRegion(imageData, x, y, width, height);
-      const { embedding } = this.computeSimulatedEmbedding(regionData);
-      
-      // Compute similarity to target
-      const similarity = this.computeCosineSimilarity(embedding, targetEmbedding);
-      
-      if (similarity > 0.3) { // Only return if somewhat similar
-        results.push({
-          bbox: [x, y, width, height],
-          confidence: similarity,
-          embedding
-        });
+    const gridSize = 3;
+    const regionWidth = Math.floor(imageData.width / gridSize);
+    const regionHeight = Math.floor(imageData.height / gridSize);
+
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        const x = col * regionWidth;
+        const y = row * regionHeight;
+        
+        const regionData = this.extractRegion(imageData, x, y, regionWidth, regionHeight);
+        const { embedding, confidence } = await this.computeEmbedding(regionData);
+        
+        const similarity = this.computeCosineSimilarity(embedding, targetEmbedding);
+        
+        if (similarity > 0.5) {
+          results.push({
+            bbox: [x, y, regionWidth, regionHeight],
+            confidence: similarity * confidence,
+            embedding
+          });
+        }
       }
     }
 
@@ -249,15 +233,15 @@ class MLProcessorClass {
   }
 
   isReady(): boolean {
-    return this.isInitialized;
+    return this.initialized;
   }
 
   dispose(): void {
-    if (this.embeddingModel) {
-      this.embeddingModel.session.dispose?.();
-      this.embeddingModel = null;
+    if (this.model?.session) {
+      this.model.session.release();
+      this.model = null;
     }
-    this.isInitialized = false;
+    this.initialized = false;
   }
 }
 
