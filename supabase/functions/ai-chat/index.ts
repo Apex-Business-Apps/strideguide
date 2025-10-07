@@ -5,10 +5,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const getAllowedOrigin = (requestOrigin: string | null): string => {
   const allowedOrigins = [
     'https://yrndifsbsmpvmpudglcc.supabase.co',
-    // Add your production domain here when deployed
-    // 'https://your-custom-domain.com',
-    // Add your preview domain here
-    // 'https://your-project.lovable.app',
+    'https://strideguide.lovable.app',
+    'https://*.lovable.app',
+    'http://localhost:8080',
+    'http://localhost:5173'
   ];
   
   if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
