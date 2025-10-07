@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clear Service Worker Cache - StrideGuide</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #1a202c;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+    p {
+      color: #4a5568;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #5a67d8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .status {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+    .success {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+    .error {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+    .info {
+      background: #bee3f8;
+      color: #2c5282;
+    }
+    code {
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔄 Service Worker Cache Manager</h1>
+    <p>
+      This tool will clear the service worker cache and force an update.
+      Use this if you're experiencing login issues or seeing outdated content.
+    </p>
+    
+    <button onclick="clearCacheAndReload()">Clear Cache & Reload</button>
+    <button onclick="unregisterSW()">Unregister Service Worker</button>
+    <button onclick="checkSWStatus()">Check SW Status</button>
+    
+    <div id="status"></div>
+  </div>
+
+  <script>
+    const status = document.getElementById('status');
+
+    function showStatus(message, type = 'info') {
+      status.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+
+    async function clearCacheAndReload() {
+      try {
+        showStatus('Clearing all caches...', 'info');
+        
+        // Clear all caches
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        
+        showStatus(`✓ Cleared ${cacheNames.length} cache(s). Reloading in 2 seconds...`, 'success');
+        
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } catch (error) {
+        showStatus(`✗ Error clearing cache: ${error.message}`, 'error');
+      }
+    }
+
+    async function unregisterSW() {
+      try {
+        showStatus('Unregistering service worker...', 'info');
+        
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(reg => reg.unregister()));
+        
+        // Clear caches too
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        
+        showStatus(`✓ Unregistered ${registrations.length} service worker(s) and cleared caches. Reload the page to start fresh.`, 'success');
+      } catch (error) {
+        showStatus(`✗ Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function checkSWStatus() {
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        const cacheNames = await caches.keys();
+        
+        let message = '<strong>Service Worker Status:</strong><br><br>';
+        
+        if (registration) {
+          message += `State: ${registration.active?.state || 'No active worker'}<br>`;
+          message += `Scope: <code>${registration.scope}</code><br><br>`;
+        } else {
+          message += 'No service worker registered<br><br>';
+        }
+        
+        message += `<strong>Caches:</strong> ${cacheNames.length}<br>`;
+        if (cacheNames.length > 0) {
+          message += `<code>${cacheNames.join('</code>, <code>')}</code>`;
+        }
+        
+        showStatus(message, 'info');
+      } catch (error) {
+        showStatus(`✗ Error: ${error.message}`, 'error');
+      }
+    }
+
+    // Auto-check status on load
+    checkSWStatus();
+  </script>
+</body>
+</html>

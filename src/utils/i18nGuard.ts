@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 // i18n guard: highlights any raw key leaking to UI (e.g., "app.badges.offline")
 export function assertHumanizedCopy(root = document.body) {
   const bad = [];
@@ -26,11 +28,17 @@ export function assertHumanizedCopy(root = document.body) {
       });
     }
   }
+  return bad.length === 0;
 }
 
 // Hook to run the guard on component updates
 export function useI18nGuard() {
-  if (import.meta.env.DEV) {
-    setTimeout(() => assertHumanizedCopy(), 100);
-  }
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      const timer = setTimeout(() => {
+        assertHumanizedCopy();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 }

@@ -1,8 +1,8 @@
 // StrideGuide Service Worker - Security Hardened & Performance Optimized
 // Version 3.0 - Allowlist-based caching with deny-by-default fetch + Stale-While-Revalidate
 
-const CACHE_NAME = 'stride-guide-v4';
-const CACHE_VERSION = 4;
+const CACHE_NAME = 'stride-guide-v5';
+const CACHE_VERSION = 5;
 const MAX_CACHE_SIZE = 100; // Maximum cached items
 const CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
@@ -93,14 +93,18 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // 🔒 BYPASS: Allow Supabase Auth & API requests (all domains)
-  if (url.origin.includes('supabase.co') || url.origin.includes('supabase.in')) {
+  // 🔒 BYPASS: Allow Supabase Auth & API requests (all domains) - NEVER cache or intercept
+  if (url.origin.includes('supabase.co') || 
+      url.origin.includes('supabase.in') ||
+      url.pathname.includes('/auth/')) {
+    console.log('[SW] Bypassing Supabase request:', url.href);
     return; // Let browser handle directly - no SW interference
   }
   
-  // Bypass external domains (Stripe, etc.)
-  const BYPASS_ORIGINS = ['stripe.com', 'ionos.ca'];
+  // 🔒 BYPASS: Stripe, payment processors, and external auth
+  const BYPASS_ORIGINS = ['stripe.com', 'stripe.network', 'ionos.ca', 'google.com', 'googleapis.com'];
   if (BYPASS_ORIGINS.some(domain => url.origin.includes(domain))) {
+    console.log('[SW] Bypassing external service:', url.origin);
     return; // Let browser handle directly
   }
   

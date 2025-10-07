@@ -4,8 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Volume2, SkipForward, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AudioArmer } from '@/utils/AudioArmer';
-import { t } from '@/utils/i18n';
-import { assertHumanizedCopy } from '@/utils/i18nGuard';
+import { useTranslation } from 'react-i18next';
 
 interface OnboardingTutorialProps {
   onComplete: () => void;
@@ -13,6 +12,7 @@ interface OnboardingTutorialProps {
 }
 
 export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete, onSkip }) => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   
   const steps = [
@@ -54,17 +54,12 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
     }
   ];
 
-  // Auto-play audio for first step and run i18n guard
+  // Auto-play audio for first step
   useEffect(() => {
     if (currentStep === 0) {
       setTimeout(() => {
         playStepAudio(0);
       }, 500);
-    }
-    
-    // Run i18n guard in development
-    if (import.meta.env.DEV) {
-      setTimeout(() => assertHumanizedCopy(), 100);
     }
   }, [currentStep]);
 
@@ -77,10 +72,10 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
       // Play a gentle earcon to indicate step start
       AudioArmer.playEarcon('step-start');
       
-      // Announce the step content using safe i18n lookup
+      // Announce the step content
       const step = steps[stepIndex];
-      const title = t(step.titleKey, {}, "");
-      const content = t(step.contentKey, {}, "");
+      const title = t(step.titleKey) || '';
+      const content = t(step.contentKey) || '';
       const announcement = `${title}. ${content}`;
       
       setTimeout(() => {
@@ -91,7 +86,7 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
       console.warn('Audio playback failed:', error);
       // Fallback announcement for suspended context
       if (error instanceof Error && error.message.includes('suspended')) {
-        AudioArmer.announceText(t("audio.tapToArm", {}, "Tap once to allow sound"));
+        AudioArmer.announceText(t("audio.tapToArm") || "Tap once to allow sound");
       }
     }
   };
@@ -129,7 +124,7 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
         className="sr-only"
         key={currentStep}
       >
-        {t("onboarding.step", { n: currentStep + 1, total: steps.length }, "")}
+        {t("onboarding.step", { n: currentStep + 1, total: steps.length })}
       </div>
       
       <Card className="w-full max-w-md mx-auto">
@@ -138,7 +133,7 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-muted-foreground">
-                {t("onboarding.step", { n: currentStep + 1, total: steps.length }, "")}
+                {t("onboarding.step", { n: currentStep + 1, total: steps.length })}
               </span>
               <Button
                 variant="ghost"
@@ -147,7 +142,7 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
                 className="text-muted-foreground hover:text-foreground"
               >
                 <SkipForward className="h-4 w-4 mr-1" />
-                {t("onboarding.skip", {}, "")}
+                {t("onboarding.skip")}
               </Button>
             </div>
             <Progress value={progress} className="h-2" />
@@ -156,10 +151,10 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
           {/* Step content */}
           <div className="mb-6 text-center">
             <h2 className="text-xl font-semibold mb-3 text-foreground">
-              {t(currentStepData.titleKey, {}, "")}
+              {t(currentStepData.titleKey)}
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              {t(currentStepData.contentKey, {}, "")}
+              {t(currentStepData.contentKey)}
             </p>
           </div>
 
@@ -172,7 +167,7 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
               className="min-w-[140px]"
             >
               <Volume2 className="h-4 w-4 mr-2" />
-              {t("onboarding.playAudio", {}, "")}
+              {t("onboarding.playAudio")}
             </Button>
           </div>
 
@@ -181,7 +176,7 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
             {currentStep > 0 ? (
               <Button variant="outline" onClick={prevStep} className="flex-1">
                 <ChevronLeft className="h-4 w-4 mr-1" />
-                {t("onboarding.previous", {}, "")}
+                {t("onboarding.previous")}
               </Button>
             ) : (
               <div className="flex-1" />
@@ -189,12 +184,12 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
             
             {currentStep < steps.length - 1 ? (
               <Button onClick={nextStep} className="flex-1">
-                {t("onboarding.next", {}, "")}
+                {t("onboarding.next")}
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             ) : (
               <Button onClick={onComplete} className="flex-1">
-                {t("onboarding.finish", {}, "")}
+                {t("onboarding.finish")}
               </Button>
             )}
           </div>
