@@ -81,9 +81,8 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onInstall, onSeePremiu
                 variant="secondary" 
                 className="px-3 py-1.5 text-sm font-medium bg-hero-fg/10 text-hero-fg border-hero-fg/20 backdrop-blur-sm"
                 role="listitem"
-                aria-label={t('trial_cta')}
               >
-                {`✓ ${t('badge_free')}`}
+                {i18n.language === 'en' ? '✓ Free Trial' : '✓ Essai Gratuit'}
               </Badge>
               <Badge 
                 variant="secondary" 
@@ -110,7 +109,9 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onInstall, onSeePremiu
             
             {/* Trial footnote */}
             <p className="text-xs text-hero-fg/70 pt-2 max-w-md">
-              {t('trial_footnote')}
+              {i18n.language === 'en' 
+                ? '* Free trial includes all features. No credit card required.' 
+                : '* L\'essai gratuit inclut toutes les fonctionnalités. Aucune carte de crédit requise.'}
             </p>
           </div>
 
