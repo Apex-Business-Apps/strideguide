@@ -730,7 +730,57 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_features: {
+        Row: {
+          description: string | null
+          is_enabled: boolean | null
+          name: string | null
+        }
+        Insert: {
+          description?: string | null
+          is_enabled?: boolean | null
+          name?: string | null
+        }
+        Update: {
+          description?: string | null
+          is_enabled?: boolean | null
+          name?: string | null
+        }
+        Relationships: []
+      }
+      public_pricing: {
+        Row: {
+          features: Json | null
+          is_active: boolean | null
+          max_users: number | null
+          name: string | null
+          price_monthly: number | null
+          price_yearly: number | null
+          priority_support: boolean | null
+          white_label: boolean | null
+        }
+        Insert: {
+          features?: Json | null
+          is_active?: boolean | null
+          max_users?: number | null
+          name?: string | null
+          price_monthly?: number | null
+          price_yearly?: number | null
+          priority_support?: boolean | null
+          white_label?: boolean | null
+        }
+        Update: {
+          features?: Json | null
+          is_active?: boolean | null
+          max_users?: number | null
+          name?: string | null
+          price_monthly?: number | null
+          price_yearly?: number | null
+          priority_support?: boolean | null
+          white_label?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assign_admin_role: {
