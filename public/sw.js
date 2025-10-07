@@ -93,10 +93,14 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // Only handle same-origin requests
+  // CRITICAL: Never cache Supabase auth requests - bypass SW entirely
+  if (url.hostname.includes('supabase.co')) {
+    return; // Let browser handle directly - no SW interference
+  }
+  
+  // Only handle same-origin requests for everything else
   if (url.origin !== self.location.origin) {
-    console.log('[SW] Ignoring cross-origin request:', url.href);
-    return;
+    return; // Let browser handle directly
   }
   
   // Only handle GET requests for caching
