@@ -6,6 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Volume2, VolumeX, Globe, RotateCcw, Headphones } from 'lucide-react';
+import { Logger } from '@/utils/Logger';
 
 const AudioControls = () => {
   const [volume, setVolume] = React.useState([75]);
@@ -31,12 +32,12 @@ const AudioControls = () => {
 
   const repeatLastCue = () => {
     // In real app, this would trigger TTS to repeat the last guidance
-    console.log('Repeating:', lastCue);
+    Logger.debug('Repeating:', lastCue);
   };
 
   const testStereoAudio = () => {
     // In real app, this would play a stereo test tone
-    console.log('Testing stereo audio positioning');
+    Logger.debug('Testing stereo audio positioning');
   };
 
   return (

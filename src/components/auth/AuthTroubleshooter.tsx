@@ -7,7 +7,7 @@ import { AlertCircle, RefreshCw, Wifi, WifiOff } from "lucide-react";
 
 export function AuthTroubleshooter() {
   const [isOpen, setIsOpen] = useState(false);
-  const [diagnostics, setDiagnostics] = useState<Record<string, string | boolean | number> | null>(null);
+  const [diagnostics, setDiagnostics] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const runDiagnostics = async () => {
