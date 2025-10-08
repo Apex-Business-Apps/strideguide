@@ -11,6 +11,10 @@ interface AdminSetupProps {
 }
 
 export const AdminSetup = ({ userId, userEmail }: AdminSetupProps) => {
+  // PHASE 1 MIGRATION: Temporarily disabled during index creation
+  // Re-enable after Phase 4 (admin assignment restrictions) is complete
+  const MIGRATION_MODE = true; // Set to false after migration complete
+  
   const { toast } = useToast();
   const [isAssigning, setIsAssigning] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -49,6 +53,26 @@ export const AdminSetup = ({ userId, userEmail }: AdminSetupProps) => {
       setIsAssigning(false);
     }
   };
+
+  // Block admin creation during migration
+  if (MIGRATION_MODE) {
+    return (
+      <Card className="max-w-2xl mx-auto p-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-yellow-500" />
+            🔒 Admin Setup Temporarily Unavailable
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Admin setup is temporarily disabled during system maintenance (index optimization).
+            Expected completion: 2-4 AM maintenance window.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (isAdmin) {
     return (
