@@ -11,6 +11,7 @@ import { HealthManager } from '@/utils/HealthManager';
 import { useJourneyTrace } from '@/hooks/useJourneyTrace';
 import { DataWipeManager } from '@/utils/DataWipeManager';
 import { telemetry } from '@/utils/Telemetry';
+import { AdvancedActions } from '@/components/settings/AdvancedActions';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -360,6 +361,14 @@ const SettingsDashboard: React.FC<SettingsDashboardProps> = ({ onBack, replayTut
               >
                 Export Settings Data
               </Button>
+            </div>
+
+            <Separator className="my-4" />
+            
+            {/* Advanced Section */}
+            <div className="space-y-3 pt-2">
+              <h4 className="font-medium text-sm">Advanced</h4>
+              <AdvancedActions />
             </div>
           </div>
         </div>

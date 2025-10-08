@@ -5,6 +5,7 @@ export const ALLOWED_ORIGINS = [
   'https://yrndifsbsmpvmpudglcc.supabase.co',
   'https://strideguide.cam',
   'https://www.strideguide.cam',
+  // Remove preview origins post-launch for production hardening
   'https://strideguide.lovable.app',
   'http://localhost:8080',
   'http://localhost:5173',
