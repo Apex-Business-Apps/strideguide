@@ -407,3 +407,126 @@ Only proceed to Phase 2 when ALL of these are true:
 4. Archive this document with timestamp and results
 
 **Next Phase:** Phase 2 - Enhanced rate-limit logging with debounce
+
+---
+
+## Phase 2: Audit Log Deduplication
+
+**Status:** 🟢 Deployed  
+**Deployed:** [Pending execution]  
+**Risk Level:** Low (backward compatible)
+
+### Objectives
+- Prevent audit log floods from repeated rate-limit triggers
+- Only log one `rate_limit_exceeded` event per user/endpoint per minute
+- Maintain full audit trail for non-rate-limit events
+- Use Phase 1 indexes for efficient deduplication queries
+
+### Changes Made
+
+**1. Database Function: `log_audit_event_deduplicated`**
+```sql
+-- Automatically deployed via migration
+-- Location: Supabase > Database > Functions
+```
+
+**Features:**
+- Checks for duplicate logs within 60-second window
+- Scoped to user_id + endpoint + event_type
+- Returns NULL if duplicate (no insert)
+- Uses composite index for O(log n) lookups
+- Non-rate-limit events log normally (no deduplication)
+
+**2. Edge Function Updates**
+- `validate-feature-access` now uses RPC call for rate limit logging
+- Event data includes `endpoint` field for proper scoping
+- All other audit events unchanged (full history preserved)
+
+### Testing
+
+See `test-scripts/phase2-audit-dedup-test.md` for comprehensive test plan:
+- Test 1: Single endpoint deduplication
+- Test 2: Multiple endpoints isolation
+- Test 3: Different users isolation
+- Test 4: Window expiration (65s delay)
+- Test 5: Non-rate-limit events (control)
+- Performance test: Burst traffic simulation
+
+### Monitoring Metrics
+
+**Audit Table Growth:**
+```sql
+SELECT 
+  event_type,
+  COUNT(*) as total_events,
+  COUNT(DISTINCT user_id) as unique_users,
+  MIN(created_at) as first_logged,
+  MAX(created_at) as last_logged
+FROM security_audit_log
+WHERE created_at > now() - interval '24 hours'
+GROUP BY event_type
+ORDER BY total_events DESC;
+```
+
+**Expected:** `rate_limit_exceeded` count should drop by ~95% during burst traffic.
+
+**Deduplication Efficiency:**
+```sql
+-- Check how many potential duplicates were prevented
+SELECT 
+  user_id,
+  event_data->>'endpoint' as endpoint,
+  COUNT(*) as logged_events,
+  -- Estimate: if requests were constant for 1 hour, we'd see ~60 logs without dedup
+  EXTRACT(EPOCH FROM (MAX(created_at) - MIN(created_at))) / 60 as duration_minutes
+FROM security_audit_log
+WHERE event_type = 'rate_limit_exceeded'
+  AND created_at > now() - interval '1 hour'
+GROUP BY user_id, event_data->>'endpoint'
+HAVING COUNT(*) > 1;
+```
+
+**Expected:** Very few rows (only if user retries after 60s window).
+
+### Rollback Plan
+
+If issues detected (missing logs, performance degradation):
+
+1. Revert edge function to direct insert:
+```typescript
+await supabase.from('security_audit_log').insert({ ... });
+```
+
+2. Keep database function in place (harmless if unused)
+
+3. Monitor for 24h to confirm issue resolved
+
+4. Post-mortem to determine root cause before re-attempting
+
+### Acceptance Checklist
+
+- [ ] Database function deployed successfully
+- [ ] Edge function updated and deployed
+- [ ] Test 1 (single endpoint) passes
+- [ ] Test 2 (multiple endpoints) passes
+- [ ] Test 3 (different users) passes
+- [ ] Test 4 (window expiration) passes
+- [ ] Test 5 (non-rate-limit control) passes
+- [ ] Performance test: burst traffic handled efficiently
+- [ ] Audit table growth reduced by >90% under load
+- [ ] No legitimate logs missing
+- [ ] Index usage confirmed in EXPLAIN ANALYZE
+- [ ] Staging deployment successful
+- [ ] Production deployment off-peak completed
+
+---
+
+## Phase 2 Completion Actions
+
+1. Run full test suite in staging (see test-scripts/phase2-audit-dedup-test.md)
+2. Verify metrics showing reduced audit log growth
+3. Deploy to production during off-peak hours (2-4 AM)
+4. Monitor for 24 hours for unexpected behavior
+5. Document results in execution report template below
+
+**Next Phase:** Phase 3 - TBD

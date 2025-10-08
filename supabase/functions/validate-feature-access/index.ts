@@ -92,12 +92,13 @@ serve(async (req) => {
     } else if (!rateLimitCheck) {
       console.warn(`[${requestId}] Rate limit exceeded for user ${user.id}, feature ${featureName}`);
       
-      // Log rate limit violation
-      await supabase.from("security_audit_log").insert({
-        user_id: user.id,
-        event_type: "rate_limit_exceeded",
-        severity: "warning",
-        event_data: { 
+      // Log rate limit violation (deduplicated per user/endpoint/minute)
+      await supabase.rpc('log_audit_event_deduplicated', {
+        _user_id: user.id,
+        _event_type: 'rate_limit_exceeded',
+        _severity: 'warn',
+        _event_data: { 
+          endpoint: `feature_${featureName}`,
           feature: featureName,
           limit: rateLimitConfig.maxRequests,
           window: rateLimitConfig.windowMinutes

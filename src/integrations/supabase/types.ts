@@ -822,6 +822,16 @@ export type Database = {
         Args: { org_id: string }
         Returns: boolean
       }
+      log_audit_event_deduplicated: {
+        Args: {
+          _dedup_window_seconds?: number
+          _event_data?: Json
+          _event_type: string
+          _severity: string
+          _user_id: string
+        }
+        Returns: string
+      }
       user_has_feature_access: {
         Args: { feature_name: string; user_uuid: string }
         Returns: boolean
