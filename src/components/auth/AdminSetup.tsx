@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +18,7 @@ export const AdminSetup = ({ userId, userEmail }: AdminSetupProps) => {
   const [loading, setLoading] = useState(true);
 
   // Check if user is admin and if any admins exist
-  useState(() => {
+  useEffect(() => {
     const checkAdminStatus = async () => {
       try {
         // Check if any admins exist in the system
@@ -48,7 +48,7 @@ export const AdminSetup = ({ userId, userEmail }: AdminSetupProps) => {
     };
 
     checkAdminStatus();
-  });
+  }, [userId]);
 
   const handleAssignAdmin = async () => {
     setIsAssigning(true);
