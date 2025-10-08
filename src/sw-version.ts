@@ -1,2 +1,2 @@
-// @stride/sw-version v9 – CRITICAL: Fixed Supabase hostname check (mobile data auth fix)
-export const SW_VERSION = 'sg-2025-10-07-supabase-hostname-fix-v6';
+// @stride/sw-version v10 – PWA scope isolation: /app only, purge marketing caches
+export const SW_VERSION = 'sg-2025-10-08-app-scope-v1';

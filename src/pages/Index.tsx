@@ -49,6 +49,7 @@ import { SOSGuard } from '@/utils/SOSGuard';
 import { WakeLockManager } from '@/utils/WakeLockManager';
 import { AudioArmer } from '@/utils/AudioArmer';
 import { HealthManager } from '@/utils/HealthManager';
+import { UTMTracker } from '@/utils/utm-tracker';
 
 // Types for enhanced notification system
 interface EnhancedNotification {
@@ -158,6 +159,9 @@ const Index: React.FC = () => {
   useEffect(() => {
     BatteryGuard.initialize();
     // SOSGuard is singleton, already initialized
+    
+    // Track app entry with UTM attribution
+    UTMTracker.trackAppEntry();
     
     const unsubscribe = HealthManager.onHealthChange?.((status) => {
       if (status.overall === 'critical') {

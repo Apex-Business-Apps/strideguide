@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export const LandingFooter: React.FC = () => {
+interface LandingFooterProps {
+  onOpenApp?: () => void;
+}
+
+export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApp }) => {
   const { t, i18n } = useTranslation();
 
   const toggleLanguage = () => {
@@ -49,19 +53,31 @@ export const LandingFooter: React.FC = () => {
             </ul>
           </nav>
 
-          {/* Language */}
+          {/* Language & App */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-foreground">Language</h4>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleLanguage}
-              className="gap-2"
-              aria-label={`Switch to ${i18n.language === 'en' ? 'French' : 'English'}`}
-            >
-              <Globe className="w-4 h-4" aria-hidden="true" />
-              <span>{i18n.language === 'en' ? 'Français' : 'English'}</span>
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleLanguage}
+                className="gap-2 w-full sm:w-auto"
+                aria-label={`Switch to ${i18n.language === 'en' ? 'French' : 'English'}`}
+              >
+                <Globe className="w-4 h-4" aria-hidden="true" />
+                <span>{i18n.language === 'en' ? 'Français' : 'English'}</span>
+              </Button>
+              {onOpenApp && (
+                <Button
+                  onClick={onOpenApp}
+                  size="sm"
+                  className="w-full sm:w-auto"
+                  aria-label="Open App"
+                >
+                  Open App
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 

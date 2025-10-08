@@ -25,19 +25,13 @@ const LandingPage: React.FC = () => {
   }, [i18n.language]);
 
   const handleInstall = () => {
-    // Check if PWA is installable
-    const event = (window as any).deferredPrompt;
-    if (event) {
-      event.prompt();
-      event.userChoice.then((choice: any) => {
-        if (choice.outcome === 'accepted') {
-          console.log('PWA installed');
-        }
-      });
-    } else {
-      // Fallback: Navigate to app
-      navigate('/dashboard');
-    }
+    // Always navigate to /app with UTM preservation
+    navigate('/app?source=landing_cta');
+  };
+
+  const handleOpenApp = () => {
+    // Direct navigation to app with UTM tracking
+    navigate('/app?source=header_cta');
   };
 
   const handleSeePremium = () => {
@@ -58,9 +52,9 @@ const LandingPage: React.FC = () => {
       <SEOHead
         title="StrideGuide - AI Vision Assistant for Blind & Low Vision Users | Free Offline Navigation"
         description="Free offline AI seeing-eye assistant for blind, low vision, and senior users in Canada. Real-time obstacle detection, voice guidance, and emergency SOS. Works without internet. English & French."
-        canonical="https://strideguide.app/"
+        canonical="https://strideguide.cam/"
       />
-      <LandingHeader onSignIn={handleSignIn} />
+      <LandingHeader onSignIn={handleSignIn} onOpenApp={handleOpenApp} />
       
       <main id="main-content">
         <LandingHero onInstall={handleInstall} onSeePremium={handleSeePremium} />
@@ -112,7 +106,7 @@ const LandingPage: React.FC = () => {
         </section>
       </main>
 
-      <LandingFooter />
+      <LandingFooter onOpenApp={handleOpenApp} />
     </div>
   );
 };

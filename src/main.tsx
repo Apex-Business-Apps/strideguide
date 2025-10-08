@@ -19,29 +19,29 @@ import "./utils/PerformanceMonitor";
 // Load runtime config before app boot
 import { loadRuntimeConfig } from "./config/runtime";
 
-// CRITICAL: SW kill-switch - default disabled until explicitly enabled
-const SW_ENABLED = import.meta.env.VITE_ENABLE_SW === 'true';
+// CRITICAL: Only register SW for /app routes (PWA scope)
+const isAppRoute = window.location.pathname.startsWith('/app');
 
-// Aggressive SW cleanup on load
-if ("serviceWorker" in navigator) {
+// Aggressive SW cleanup outside /app scope
+if (!isAppRoute && "serviceWorker" in navigator) {
   navigator.serviceWorker.getRegistrations().then(regs => {
     Promise.all(regs.map(r => r.unregister()));
   });
   if ('caches' in window) {
     caches.keys().then(names => Promise.all(names.map(n => caches.delete(n))));
   }
-  console.log('[App] Service Worker cleanup executed');
+  console.log('[App] Service Worker cleanup executed (marketing route)');
 }
 
-// Only register SW if explicitly enabled via VITE_ENABLE_SW=true
-if (SW_ENABLED && "serviceWorker" in navigator) {
+// Only register SW under /app scope
+if (isAppRoute && "serviceWorker" in navigator) {
   const url = `/sw.js?v=${encodeURIComponent(SW_VERSION)}`;
   window.addEventListener("load", () => {
     navigator.serviceWorker.register(url, { 
-      scope: '/',
+      scope: '/app',
       updateViaCache: 'none'
     }).then((registration) => {
-      console.log('[App] Service Worker registered (VITE_ENABLE_SW=true), version:', SW_VERSION);
+      console.log('[App] Service Worker registered for /app scope, version:', SW_VERSION);
       setInterval(() => {
         registration.update().catch(() => {});
       }, 1000 * 60 * 60);
@@ -49,8 +49,8 @@ if (SW_ENABLED && "serviceWorker" in navigator) {
       console.warn('[App] Service Worker registration failed:', err);
     });
   });
-} else {
-  console.log('[App] Service Worker DISABLED (VITE_ENABLE_SW not set or false). Current version:', SW_VERSION);
+} else if (!isAppRoute) {
+  console.log('[App] Service Worker DISABLED (marketing route). Version:', SW_VERSION);
 }
 
 // Preload critical resources

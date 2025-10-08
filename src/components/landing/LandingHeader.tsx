@@ -7,9 +7,10 @@ import { Globe } from 'lucide-react';
 
 interface LandingHeaderProps {
   onSignIn: () => void;
+  onOpenApp: () => void;
 }
 
-export const LandingHeader: React.FC<LandingHeaderProps> = ({ onSignIn }) => {
+export const LandingHeader: React.FC<LandingHeaderProps> = ({ onSignIn, onOpenApp }) => {
   const { t, i18n } = useTranslation();
 
   const toggleLanguage = () => {
@@ -38,6 +39,15 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onSignIn }) => {
               aria-label={`Switch to ${i18n.language === 'en' ? 'French' : 'English'}`}
             >
               <Globe className="w-5 h-5" aria-hidden="true" />
+            </Button>
+            <Button
+              onClick={onOpenApp}
+              variant="outline"
+              size="lg"
+              className="min-h-[44px] px-6 font-semibold hidden sm:flex"
+              aria-label="Open App"
+            >
+              Open App
             </Button>
             <Button
               onClick={onSignIn}
