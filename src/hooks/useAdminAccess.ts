@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
-import { logger } from '@/utils/ProductionLogger';
 
 interface AdminAccessResult {
   isAdmin: boolean;
@@ -52,10 +51,7 @@ export const useAdminAccess = (user: User | null): AdminAccessResult => {
 
         setIsAdmin(data?.isAdmin === true);
       } catch (err) {
-        logger.error('Admin access check failed', { 
-          error: err instanceof Error ? err.message : 'Unknown error',
-          userId: user?.id 
-        });
+        console.error('Admin access check failed:', err);
         setError(err instanceof Error ? err : new Error('Unknown error'));
         setIsAdmin(false);
       } finally {
