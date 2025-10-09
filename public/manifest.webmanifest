@@ -1,17 +1,28 @@
 {
-  "name": "StrideGuide",
+  "name": "StrideGuide - AI Seeing-Eye Assistant",
   "short_name": "StrideGuide",
-  "description": "Offline visual guidance with EN/FR, Finder, and Emergency SOS.",
+  "description": "Free offline AI seeing-eye assistant for blind, low vision, and senior users. Real-time obstacle detection, voice guidance, emergency SOS. Works without internet. English & French.",
   "start_url": "/app?source=pwa",
   "scope": "/app",
   "display": "standalone",
   "background_color": "#0A0A0A",
-  "theme_color": "#0A0A0A",
+  "theme_color": "#3730A3",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "StrideGuide main interface showing real-time obstacle detection and voice guidance"
+    }
+  ],
   "orientation": "portrait",
   "categories": ["accessibility", "health", "utilities"],
-  "lang": "en"
+  "lang": "en",
+  "dir": "ltr",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
 }
