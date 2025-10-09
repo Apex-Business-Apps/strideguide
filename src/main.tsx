@@ -8,6 +8,9 @@ import "@fontsource/inter/800.css";
 import i18n, { i18nReady } from "./i18n";
 import "./utils/ComponentTester";
 import "./utils/SystemReliabilityTester";
+import { registerSW } from "./sw/register";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import UpdateToast from "./components/UpdateToast";
 
 // Initialize core managers
 import "./utils/InstallManager";
@@ -19,39 +22,9 @@ import "./utils/PerformanceMonitor";
 // Load runtime config before app boot
 import { loadRuntimeConfig } from "./config/runtime";
 
-// CRITICAL: Only register SW for /app routes (PWA scope)
-const isAppRoute = window.location.pathname.startsWith('/app');
-
-// Aggressive SW cleanup outside /app scope
-if (!isAppRoute && "serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    Promise.all(regs.map(r => r.unregister()));
-  });
-  if ('caches' in window) {
-    caches.keys().then(names => Promise.all(names.map(n => caches.delete(n))));
-  }
-  console.log('[App] Service Worker cleanup executed (marketing route)');
-}
-
-// Only register SW under /app scope
-if (isAppRoute && "serviceWorker" in navigator) {
-  const url = `/sw.js?v=${encodeURIComponent(SW_VERSION)}`;
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register(url, { 
-      scope: '/app',
-      updateViaCache: 'none'
-    }).then((registration) => {
-      console.log('[App] Service Worker registered for /app scope, version:', SW_VERSION);
-      setInterval(() => {
-        registration.update().catch(() => {});
-      }, 1000 * 60 * 60);
-    }).catch((err) => {
-      console.warn('[App] Service Worker registration failed:', err);
-    });
-  });
-} else if (!isAppRoute) {
-  console.log('[App] Service Worker DISABLED (marketing route). Version:', SW_VERSION);
-}
+// Register SW in production only (using new v3 module)
+registerSW();
+console.log('[App] SW registration initialized, version:', SW_VERSION);
 
 // Preload critical resources
 const preloadCritical = () => {
@@ -81,5 +54,10 @@ Promise.all([
   if (!i18n.isInitialized) {
     console.warn('[App] i18n not initialized, forcing render anyway');
   }
-  createRoot(document.getElementById("root")!).render(<App />);
+  createRoot(document.getElementById("root")!).render(
+    <ErrorBoundary>
+      <App />
+      <UpdateToast />
+    </ErrorBoundary>
+  );
 });
