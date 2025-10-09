@@ -153,7 +153,7 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
 
     try {
       const validated = authSchema.parse(formData);
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/app`;
 
       logger.info("Calling Supabase signUp", { correlationId, redirectUrl });
 
@@ -236,7 +236,7 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${window.location.origin}/app`,
       });
 
       if (error) {

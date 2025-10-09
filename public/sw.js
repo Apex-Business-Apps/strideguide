@@ -1,5 +1,5 @@
 // @stride/sw v3 — GET-only allowlist; no index.html/SW caching; safe updates
-const CACHE = "sg-app-v3";
+const CACHE = "sg-2025-10-08-app-scope-v2";
 const ALLOW = [/^\/app\/$/, /^\/app\/index\.html$/, /^\/app\/assets\//, /^\/icons\//, /^\/audio\//, /^\/ml\//, /^\/manifest\.webmanifest$/];
 
 self.addEventListener("install", (e) => e.waitUntil(self.skipWaiting()));

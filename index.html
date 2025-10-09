@@ -5,6 +5,19 @@
     <!-- @stride/web-head:v3-production -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     
+    <!-- SW kill-switch: unregister any non-/app service worker -->
+    <script>
+(function killLegacySW(){
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.getRegistrations()
+    .then(regs => Promise.all(regs.map(r => {
+      // Keep only the PWA SW under /app/. Everything else must go.
+      if (!r.scope.endsWith('/app/')) return r.unregister();
+    })))
+    .catch(()=>{});
+})();
+    </script>
+    
     <!-- UA theming + safe defaults -->
     <meta name="color-scheme" content="dark light" />
     <style>
