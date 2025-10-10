@@ -1,38 +1,55 @@
-// Registers SW in prod only; shows "update available" prompt
-// Disables and unregisters SW in preview builds
+// @stride/sw-register v3.1 — Scoped to /app/sw.js in production; unregisters root SW; preview cleanup
 export function registerSW() {
-  // Disable SW in preview builds (lovableproject.com domain)
   const isPreview = window.location.hostname.includes('lovableproject.com');
+  const isAppRoute = window.location.pathname.startsWith('/app');
   
-  if (isPreview && "serviceWorker" in navigator) {
-    // Unregister all service workers in preview
+  if (!("serviceWorker" in navigator)) return;
+  
+  // Preview mode: unregister all SW and clear caches
+  if (isPreview) {
     navigator.serviceWorker.getRegistrations().then(regs => {
       Promise.all(regs.map(r => r.unregister())).catch(() => {});
     });
-    
-    // Clear all cache storage in preview
     if ('caches' in window) {
       caches.keys().then(names => {
         Promise.all(names.map(name => caches.delete(name))).catch(() => {});
       });
     }
-    
-    console.log('[SW] Preview mode: Service Worker disabled and caches cleared');
+    console.log('[SW] Preview: all workers unregistered, caches cleared');
     return;
   }
   
-  if (import.meta.env.DEV || !("serviceWorker" in navigator)) return;
+  // Production mode
+  if (import.meta.env.DEV) return;
   
-  navigator.serviceWorker.register("/sw.js").then(reg => {
+  // Marketing pages (/auth, /, etc.): unregister any root-level SW
+  if (!isAppRoute) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(r => {
+        if (r.scope === window.location.origin + '/' || !r.scope.includes('/app/')) {
+          console.log(`[SW] Marketing page: unregistering non-/app/ worker at ${r.scope}`);
+          r.unregister().catch(() => {});
+        }
+      });
+    });
+    return;
+  }
+  
+  // PWA /app/ route: register scoped worker at /app/sw.js
+  navigator.serviceWorker.register("/app/sw.js", { scope: "/app/" }).then(reg => {
+    console.log(`[SW] Registered /app/ worker: ${reg.scope}`);
+    
     reg.addEventListener("updatefound", () => {
       const newSW = reg.installing;
       if (!newSW) return;
       newSW.addEventListener("statechange", () => {
         if (newSW.state === "installed" && navigator.serviceWorker.controller) {
-          const ev = new CustomEvent("sw:update", { detail: { version: "v3" } });
+          const ev = new CustomEvent("sw:update", { detail: { version: "v3.1", scope: "/app/" } });
           window.dispatchEvent(ev);
         }
       });
     });
-  }).catch(() => {});
+  }).catch(err => {
+    console.warn('[SW] Registration failed:', err);
+  });
 }

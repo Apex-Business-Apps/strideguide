@@ -20,6 +20,11 @@
   for = "/sw.js"
   [headers.values]
     Cache-Control = "no-store, no-cache, must-revalidate"
+
+[[headers]]
+  for = "/app/sw.js"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate"
     
 [[headers]]
   for = "/sw-legacy-kill.js"

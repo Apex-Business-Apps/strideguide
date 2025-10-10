@@ -153,6 +153,7 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
 
     try {
       const validated = authSchema.parse(formData);
+      // CRITICAL: PWA redirect must be /app (matches Supabase allowed URLs)
       const redirectUrl = `${window.location.origin}/app`;
 
       logger.info("Calling Supabase signUp", { correlationId, redirectUrl });
@@ -235,6 +236,7 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
     setError("");
 
     try {
+      // CRITICAL: Password reset must redirect to /app (PWA)
       const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
         redirectTo: `${window.location.origin}/app`,
       });
