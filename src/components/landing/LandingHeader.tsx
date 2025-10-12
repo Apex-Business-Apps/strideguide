@@ -42,7 +42,7 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onSignIn, onOpenAp
             </Button>
             <Button
               onClick={onOpenApp}
-              variant="outline"
+              variant="secondary"
               size="lg"
               className="min-h-[44px] px-6 font-semibold hidden sm:flex"
               aria-label="Open App"
