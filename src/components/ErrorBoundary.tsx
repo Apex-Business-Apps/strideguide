@@ -5,17 +5,17 @@
 import { Component, ReactNode } from "react";
 
 export class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
-  constructor(props: any) { 
-    super(props); 
-    this.state = { hasError: false }; 
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
   }
-  
-  static getDerivedStateFromError() { 
-    return { hasError: true }; 
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
-  
-  componentDidCatch(err: any, info: any) { 
-    console.error("[ui-error]", err, info); 
+
+  componentDidCatch(err: Error, info: React.ErrorInfo) {
+    console.error("[ui-error]", err, info);
   }
   
   render() {

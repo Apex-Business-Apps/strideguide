@@ -58,14 +58,14 @@ const App = () => {
   useI18nGuard();
   
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<unknown>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const effectiveUser = (DEV_CONFIG.BYPASS_AUTH ? (DEV_CONFIG.MOCK_USER as any) : null) || user;
+  const effectiveUser = (DEV_CONFIG.BYPASS_AUTH ? (DEV_CONFIG.MOCK_USER as User) : null) || user;
 
   useEffect(() => {
     // DEV BYPASS: Skip auth entirely if enabled
     if (DEV_CONFIG.BYPASS_AUTH) {
-      setUser(DEV_CONFIG.MOCK_USER as any);
+      setUser(DEV_CONFIG.MOCK_USER as User);
       setIsLoading(false);
       return;
     }

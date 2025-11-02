@@ -44,14 +44,14 @@ export const CameraView: React.FC<CameraViewProps> = ({
       camera.stopCamera();
       journeyTrace.complete({ fps_avg: fps });
     }
-  }, [isActive, camera]);
+  }, [isActive, camera, fps, journeyTrace]);
 
   // Track errors
   useEffect(() => {
     if (camera.error) {
       journeyTrace.fail(camera.error);
     }
-  }, [camera.error]);
+  }, [camera.error, journeyTrace]);
 
   // Handle frame processing
   useEffect(() => {
