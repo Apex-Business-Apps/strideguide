@@ -1,22 +1,40 @@
-# @stride/robots.txt v2 - SEO optimized
+# robots.txt for StrideGuide
+# Allow all search engines to crawl and index the site
+
 User-agent: *
 Allow: /
-Allow: /en
-Allow: /fr
-Allow: /pricing
-Allow: /auth
-Allow: /dashboard
-Allow: /help
-Allow: /privacy
 
-# Disallow admin and internal routes
+# Allow all major search bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Disallow crawling of private/admin areas
 Disallow: /api/
-Disallow: /admin/
-Disallow: /_/*
-Disallow: /test/
+Disallow: /_diag
+Disallow: /auth-diagnostics
+Disallow: /auth-min
+
+# Disallow crawling of service worker and cache files
+Disallow: /sw.js
+Disallow: /app/sw.js
+Disallow: /clear-cache.html
+Disallow: /clear-sw-cache.html
 
 # Sitemap location
-Sitemap: https://strideguide.app/sitemap.xml
+Sitemap: https://strideguide.cam/sitemap.xml
 
-# Crawl-delay for respectful crawling
+# Crawl-delay (optional, helps with server load)
+# Not needed for most modern crawlers
 Crawl-delay: 1

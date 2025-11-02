@@ -12,10 +12,10 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   title, 
   description, 
   canonical,
-  ogImage = 'https://strideguide.app/og-image.png'
+  ogImage = 'https://strideguide.cam/og-image.png'
 }) => {
   const location = useLocation();
-  const baseUrl = 'https://strideguide.app';
+  const baseUrl = 'https://strideguide.cam';
   const fullCanonical = canonical || `${baseUrl}${location.pathname}`;
 
   useEffect(() => {

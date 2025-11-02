@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       <SEOHead
         title="Privacy Policy - StrideGuide | PIPEDA Compliant Vision Assistant"
         description="StrideGuide privacy policy. 100% offline, no camera images leave your device, no location tracking. PIPEDA compliant privacy for Canadian blind and low vision users."
-        canonical="https://strideguide.app/privacy"
+        canonical="https://strideguide.cam/privacy"
       />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Button

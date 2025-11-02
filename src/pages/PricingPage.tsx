@@ -80,7 +80,7 @@ Thanks!`);
       <SEOHead
         title="Pricing - StrideGuide | Free & Pro Plans for Vision Assistance"
         description="Choose your plan: Free plan with 2 hours daily guidance or Pro plan with 8 hours, priority support, and free neck strap. Affordable vision assistance for blind and low vision users."
-        canonical="https://strideguide.app/pricing"
+        canonical="https://strideguide.cam/pricing"
       />
       <div className="max-w-md mx-auto space-y-6">
         {/* Header */}

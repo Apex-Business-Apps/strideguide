@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-CA">
   <head>
     <meta charset="UTF-8" />
     <!-- @stride/web-head:v3-production -->
@@ -30,6 +30,9 @@
     <meta name="description" content="Free offline AI seeing-eye assistant for blind, low vision, and senior users in Canada. Real-time obstacle detection, voice guidance, and emergency SOS. Works without internet. English & French.">
     <meta name="keywords" content="blind navigation app, vision assistant, accessibility app, obstacle detection, AI for blind, offline navigation, assistive technology, low vision aid, senior mobility, accessibility Canada">
     <meta name="author" content="StrideGuide Team" />
+    <meta name="application-name" content="StrideGuide" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
     <meta name="theme-color" content="#3730A3" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -48,11 +51,11 @@
     <!-- Open Graph / Facebook - Optimized for Social Sharing -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="StrideGuide" />
-    
-    
-    <meta property="og:url" content="https://strideguide.app/" />
-    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/cMk0ZRkLh0cxM4su6XM9LhaQusq2/social-images/social-1759823895312-1000046766.png">
-    <meta property="og:image:secure_url" content="https://strideguide.app/og-image.png" />
+    <meta property="og:title" content="StrideGuide - AI Vision Assistant for Blind &amp; Low Vision Users | Offline Navigation" />
+    <meta property="og:description" content="Free offline AI seeing-eye assistant for blind, low vision, and senior users in Canada. Real-time obstacle detection, voice guidance, and emergency SOS. Works without internet. English &amp; French." />
+    <meta property="og:url" content="https://strideguide.cam/" />
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/cMk0ZRkLh0cxM4su6XM9LhaQusq2/social-images/social-1759823895312-1000046766.png" />
+    <meta property="og:image:secure_url" content="https://strideguide.cam/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_CA" />
@@ -60,20 +63,20 @@
 
     <!-- Twitter Card - Optimized -->
     <meta name="twitter:card" content="summary_large_image" />
-    
-    
-    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/cMk0ZRkLh0cxM4su6XM9LhaQusq2/social-images/social-1759823895312-1000046766.png">
+    <meta name="twitter:title" content="StrideGuide - AI Vision Assistant for Blind &amp; Low Vision Users | Offline Navigation" />
+    <meta name="twitter:description" content="Free offline AI seeing-eye assistant for blind, low vision, and senior users in Canada. Real-time obstacle detection, voice guidance, and emergency SOS. Works without internet. English &amp; French." />
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/cMk0ZRkLh0cxM4su6XM9LhaQusq2/social-images/social-1759823895312-1000046766.png" />
     <meta name="twitter:image:alt" content="StrideGuide app interface showing AI vision assistance" />
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://strideguide.app/" />
+    <link rel="canonical" href="https://strideguide.cam/" />
     
     <!-- Language Alternates for SEO -->
-    <link rel="alternate" hreflang="en" href="https://strideguide.app/en" />
-    <link rel="alternate" hreflang="fr" href="https://strideguide.app/fr" />
-    <link rel="alternate" hreflang="en-CA" href="https://strideguide.app/en-ca" />
-    <link rel="alternate" hreflang="fr-CA" href="https://strideguide.app/fr-ca" />
-    <link rel="alternate" hreflang="x-default" href="https://strideguide.app/" />
+    <link rel="alternate" hreflang="en" href="https://strideguide.cam/en" />
+    <link rel="alternate" hreflang="fr" href="https://strideguide.cam/fr" />
+    <link rel="alternate" hreflang="en-CA" href="https://strideguide.cam/en-ca" />
+    <link rel="alternate" hreflang="fr-CA" href="https://strideguide.cam/fr-ca" />
+    <link rel="alternate" hreflang="x-default" href="https://strideguide.cam/" />
     
     <!-- Structured Data - JSON-LD for Rich Results -->
     <script type="application/ld+json">
@@ -94,12 +97,12 @@
         "ratingCount": "247"
       },
       "description": "Free offline AI seeing-eye assistant for blind and low vision users. Real-time obstacle detection, voice guidance, and emergency features.",
-      "image": "https://strideguide.app/icon-512.png",
-      "screenshot": "https://strideguide.app/og-image.png",
+      "image": "https://strideguide.cam/icon-512.png",
+      "screenshot": "https://strideguide.cam/og-image.png",
       "softwareVersion": "1.0",
       "releaseNotes": "Initial release with offline AI vision, obstacle detection, and emergency features",
       "fileSize": "2MB",
-      "installUrl": "https://strideguide.app/",
+      "installUrl": "https://strideguide.cam/",
       "featureList": [
         "Offline AI obstacle detection",
         "Voice-guided navigation",
@@ -129,8 +132,8 @@
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "StrideGuide",
-      "url": "https://strideguide.app",
-      "logo": "https://strideguide.app/icon-512.png",
+      "url": "https://strideguide.cam",
+      "logo": "https://strideguide.cam/icon-512.png",
       "sameAs": [],
       "contactPoint": {
         "@type": "ContactPoint",
@@ -173,33 +176,14 @@
     }
     </script>
     
-    <!-- Security -->
-    <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self';
-      img-src 'self' data: blob:;
-      media-src 'self' data: blob:;
-      font-src 'self';
-      style-src 'self' 'unsafe-inline';
-      script-src 'self' 'wasm-unsafe-eval';
-      connect-src 'self';
-      worker-src 'self' blob:;
-      base-uri 'none';
-      form-action 'self';
-      object-src 'none';
-      frame-ancestors 'none';
-      upgrade-insecure-requests
-    " />
-    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
-    <meta http-equiv="Cross-Origin-Resource-Policy" content="same-origin">
-    <meta http-equiv="Referrer-Policy" content="no-referrer">
-    <meta http-equiv="Permissions-Policy" content="
-      camera=(self), microphone=(), geolocation=(self), vibrate=(self),
-      fullscreen=(self), payment=(), usb=(), xr-spatial-tracking=()
-    " />
-    <meta property="og:title" content="StrideGuide - AI Vision Assistant for Blind &amp; Low Vision Users | Offline Navigation">
-  <meta name="twitter:title" content="StrideGuide - AI Vision Assistant for Blind &amp; Low Vision Users | Offline Navigation">
-  <meta property="og:description" content="Free offline AI seeing-eye assistant for blind, low vision, and senior users in Canada. Real-time obstacle detection, voice guidance, and emergency SOS. Works without internet. English &amp; French.">
-  <meta name="twitter:description" content="Free offline AI seeing-eye assistant for blind, low vision, and senior users in Canada. Real-time obstacle detection, voice guidance, and emergency SOS. Works without internet. English &amp; French.">
+    <!-- Security headers are managed via _headers file for Netlify -->
+    <!-- CSP removed from HTML to prevent conflicts with HTTP headers -->
+    <!-- See _headers file for complete security policy including Supabase + Stripe allowlist -->
+
+    <!-- Robots & Crawling -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
 </head>
 
   <body style="background-color: #0A0A0A; color: #FAFAFA;">
@@ -213,9 +197,14 @@
     <!-- Aria-live region for announcements -->
     <div id="status-announcer" aria-live="polite" aria-atomic="true" class="sr-only"></div>
     
-    <!-- Performance optimization: Preload critical resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
-    <link rel="dns-prefetch" href="https://strideguide.app">
+    <!-- Performance optimization: Preconnect to critical domains -->
+    <link rel="preconnect" href="https://yrndifsbsmpvmpudglcc.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://yrndifsbsmpvmpudglcc.supabase.co">
+    <link rel="dns-prefetch" href="https://api.stripe.com">
+
+    <!-- Preload critical assets for faster initial render -->
+    <link rel="modulepreload" href="/src/main.tsx">
+    <link rel="preload" href="/icon-512.png" as="image" type="image/png">
     
     <script type="module" src="/src/main.tsx"></script>
   </body>

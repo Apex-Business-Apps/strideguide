@@ -44,7 +44,7 @@ const HelpPage: React.FC<HelpPageProps> = ({ onBack }) => {
       <SEOHead
         title="Help & Support - StrideGuide | Vision Assistant Guide"
         description="Get help with StrideGuide's offline vision assistance features. Learn about privacy, offline mode, audio guidance, and accessibility features for blind and low vision users."
-        canonical="https://strideguide.app/help"
+        canonical="https://strideguide.cam/help"
       />
       <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
