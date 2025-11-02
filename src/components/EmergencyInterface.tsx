@@ -95,14 +95,16 @@ const EmergencyInterface: React.FC<EmergencyInterfaceProps> = ({ onBack }) => {
     }
 
     // Store interval for cleanup
-    (window as any).sosInterval = interval;
+    const w = window as Window & { sosInterval?: NodeJS.Timeout };
+    w.sosInterval = interval;
   };
 
   const handleSOSMouseUp = () => {
     setIsLongPressing(false);
     setLongPressProgress(0);
-    if ((window as any).sosInterval) {
-      clearInterval((window as any).sosInterval);
+    const w = window as Window & { sosInterval?: NodeJS.Timeout };
+    if (w.sosInterval) {
+      clearInterval(w.sosInterval);
     }
     if (navigator.vibrate) {
       navigator.vibrate(0); // Stop vibration

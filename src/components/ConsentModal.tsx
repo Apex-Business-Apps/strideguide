@@ -25,7 +25,7 @@ export default function ConsentModal() {
     const hasConsented = localStorage.getItem(CONSENT_KEY);
     if (hasConsented) return;
 
-    if ((DEV_CONFIG as any).BYPASS_AUTH) {
+    if (DEV_CONFIG.BYPASS_AUTH) {
       const consent = {
         accepted: true,
         telemetry: false,

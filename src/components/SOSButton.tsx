@@ -1,7 +1,10 @@
 import React from "react";
 
 export function SOSButton() {
-  const onDown = (e: React.MouseEvent | React.TouchEvent) => {
+  const onMouseDown = (e: React.MouseEvent) => {
+    // Could start a timer/vibration here if desired
+  };
+  const onTouchStart = (e: React.TouchEvent) => {
     // Could start a timer/vibration here if desired
   };
   const onUp = () => {
@@ -11,9 +14,9 @@ export function SOSButton() {
   return (
     <div className="flex flex-col items-center gap-2">
       <button
-        onMouseDown={onDown as any}
+        onMouseDown={onMouseDown}
         onMouseUp={onUp}
-        onTouchStart={onDown as any}
+        onTouchStart={onTouchStart}
         onTouchEnd={onUp}
         className="rounded-full bg-red-600 text-white h-40 w-40 text-lg font-bold shadow-lg hover:bg-red-700 active:scale-95 transition-all"
         aria-label="Emergency SOS"

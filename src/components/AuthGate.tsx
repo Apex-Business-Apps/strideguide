@@ -14,8 +14,8 @@ export default function AuthGate({ isAuthed, onSignIn, children }: Props) {
         // Warm session if returning via magic link
         await withAuthBackoff(() => supabase.auth.getSession(), 'getSession');
         setReady(true);
-      } catch (e: any) {
-        setErr(e?.message || 'Network error');
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : 'Network error');
       }
     })();
   }, []);

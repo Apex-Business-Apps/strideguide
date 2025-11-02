@@ -28,7 +28,7 @@ interface AuthDiagnosticResult {
     clientConfig: {
       passed: boolean;
       details: string;
-      config: Record<string, any>;
+      config: Record<string, unknown>;
     };
   };
 }
@@ -140,18 +140,18 @@ async function runAuthDiagnostics(): Promise<AuthDiagnosticResult> {
   // Test 4: Client configuration
   console.log('\n🧪 Test 4: Supabase client configuration...');
   try {
-    // @ts-ignore - accessing global supabase client
+    // @ts-expect-error - accessing global supabase client
     const supabase = window.supabase || (await import('@/integrations/supabase/client')).supabase;
-    
+
     const config = {
-      // @ts-ignore
+      // @ts-expect-error - accessing internal storage property
       storage: supabase.auth?.storage?.constructor?.name || 'unknown',
-      // @ts-ignore
-      persistSession: true, // from code review
-      // @ts-ignore
-      autoRefreshToken: true, // from code review
-      // @ts-ignore
-      flowType: 'pkce', // from code review
+      // @ts-expect-error - from code review
+      persistSession: true,
+      // @ts-expect-error - from code review
+      autoRefreshToken: true,
+      // @ts-expect-error - from code review
+      flowType: 'pkce',
     };
 
     result.tests.clientConfig.config = config;
@@ -202,16 +202,16 @@ async function runAuthDiagnostics(): Promise<AuthDiagnosticResult> {
 
   console.log('\n💾 Export this result:');
   console.log('copy(JSON.stringify(authDiagResult, null, 2))');
-  
-  // @ts-ignore
+
+  // @ts-expect-error - attaching result to window for debugging
   window.authDiagResult = result;
-  
+
   return result;
 }
 
 // Auto-run on load
 if (typeof window !== 'undefined') {
-  // @ts-ignore
+  // @ts-expect-error - attaching function to window for console access
   window.runAuthDiagnostics = runAuthDiagnostics;
   console.log('🔧 Auth diagnostics loaded. Run: runAuthDiagnostics()');
 }

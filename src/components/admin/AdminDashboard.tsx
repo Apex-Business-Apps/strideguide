@@ -59,7 +59,7 @@ export const AdminDashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+  }, [loadDashboardData]);
 
   const loadDashboardData = async () => {
     setIsLoading(true);
@@ -220,7 +220,7 @@ export const AdminDashboard = () => {
                   { variant: "outline", label: status };
 
     return (
-      <Badge variant={config.variant as any}>
+      <Badge variant={config.variant as "default" | "secondary" | "destructive" | "outline" | null | undefined}>
         {config.label}
       </Badge>
     );
