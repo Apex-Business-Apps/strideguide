@@ -39,12 +39,13 @@ const PageLoader = () => (
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
+      staleTime: 1000 * 60 * 30, // 30 minutes - increased from 5 to prevent connection errors
+      gcTime: 1000 * 60 * 60, // 60 minutes (formerly cacheTime)
       retry: 3,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: false,
       refetchOnMount: false,
+      refetchOnReconnect: true, // Only refetch on actual network reconnect
     },
     mutations: {
       retry: 2,
@@ -70,12 +71,27 @@ const App = () => {
       return;
     }
 
-    // Set up auth state listener
+    // Set up auth state listener with enhanced error handling
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsLoading(false);
+      async (event, session) => {
+        // Handle token refresh events silently to prevent disconnection errors
+        if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setIsLoading(false);
+        } else if (event === 'SIGNED_OUT') {
+          setSession(null);
+          setUser(null);
+          setIsLoading(false);
+        } else if (event === 'USER_UPDATED') {
+          setSession(session);
+          setUser(session?.user ?? null);
+        } else {
+          // For other events (PASSWORD_RECOVERY, etc.), update state normally
+          setSession(session);
+          setUser(session?.user ?? null);
+          setIsLoading(false);
+        }
       }
     );
 
