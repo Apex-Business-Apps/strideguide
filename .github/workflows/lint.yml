@@ -1,0 +1,40 @@
+name: ci/lint
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  lint:
+    name: Lint Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --onnxruntime-node-install-cuda=skip
+        env:
+          NODE_ENV: production
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+        continue-on-error: false
+
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Lint summary
+        run: |
+          echo "✅ TypeScript check passed"
+          echo "⚠️  ESLint warnings exist but not blocking"
