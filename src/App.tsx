@@ -61,24 +61,37 @@ const App = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<unknown>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const effectiveUser = (DEV_CONFIG.BYPASS_AUTH ? (DEV_CONFIG.MOCK_USER as User) : null) || user;
+  const effectiveUser = (DEV_CONFIG.BYPASS_AUTH ? (DEV_CONFIG.MOCK_USER as unknown as User) : null) || user;
 
   useEffect(() => {
     // DEV BYPASS: Skip auth entirely if enabled
     if (DEV_CONFIG.BYPASS_AUTH) {
-      setUser(DEV_CONFIG.MOCK_USER as User);
+      setUser(DEV_CONFIG.MOCK_USER as unknown as User);
       setIsLoading(false);
       return;
     }
 
-    // Set up auth state listener with enhanced error handling
+    let isInitialized = false;
+    let sessionCheckCompleted = false;
+
+    // Set up auth state listener FIRST with enhanced error handling
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        // On initial session load, the listener fires first - handle it silently
+        if (event === 'INITIAL_SESSION') {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setIsLoading(false);
+          isInitialized = true;
+          sessionCheckCompleted = true;
+          return;
+        }
+
         // Handle token refresh events silently to prevent disconnection errors
         if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
           setSession(session);
           setUser(session?.user ?? null);
-          setIsLoading(false);
+          if (!isInitialized) setIsLoading(false);
         } else if (event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
@@ -87,19 +100,42 @@ const App = () => {
           setSession(session);
           setUser(session?.user ?? null);
         } else {
-          // For other events (PASSWORD_RECOVERY, etc.), update state normally
+          // For other events, update state normally but don't change loading if already initialized
           setSession(session);
           setUser(session?.user ?? null);
-          setIsLoading(false);
+          if (!isInitialized) setIsLoading(false);
         }
       }
     );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
+    // Check for existing session AFTER listener is set up
+    // This prevents double state updates - if INITIAL_SESSION already fired, skip this
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      // Only update if listener hasn't already initialized us
+      if (!sessionCheckCompleted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+        isInitialized = true;
+        sessionCheckCompleted = true;
+      }
+      // If there's an error getting session, still mark as initialized to prevent hanging
+      if (error && !isInitialized) {
+        setSession(null);
+        setUser(null);
+        setIsLoading(false);
+        isInitialized = true;
+        sessionCheckCompleted = true;
+      }
+    }).catch(() => {
+      // If getSession fails, still mark as initialized to prevent hanging
+      if (!isInitialized) {
+        setSession(null);
+        setUser(null);
+        setIsLoading(false);
+        isInitialized = true;
+        sessionCheckCompleted = true;
+      }
     });
 
     return () => subscription.unsubscribe();

@@ -122,38 +122,17 @@ const Index: React.FC = () => {
   
   const isPremiumUser = hasFeatureAccess('enhanced_notifications');
 
-  // Authentication setup
+  // Get current user on mount (no duplicate listener - App.tsx handles global auth state)
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Update AI bot status notification
-        if (session?.user && !aiBot.isConnected) {
-          addNotification({
-            id: `ai-bot-${Date.now()}`,
-            type: 'warning',
-            title: 'AI Assistant Initializing',
-            message: 'Setting up your AI assistant after login...',
-            timestamp: new Date(),
-            priority: 'medium',
-            category: 'system',
-            isContextual: true,
-            requiresAcknowledgment: false,
-            hasAudio: false,
-          });
-        }
-      }
-    );
-
+    // Single check for current session - App.tsx handles all auth state changes
+    // No need for duplicate listener or notification logic (handled by other useEffects)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+    }).catch(() => {
+      // Silent fail - App.tsx handles auth state globally
     });
-
-    return () => subscription.unsubscribe();
-  }, [aiBot.isConnected]);
+  }, []);
 
   // Initialize system guards and check onboarding
   useEffect(() => {
