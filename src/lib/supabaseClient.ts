@@ -1,31 +1,46 @@
-// Robust auth utilities with health + backoff for existing Supabase client
-import { supabase } from '@/integrations/supabase/client';
+// DEPRECATED: This wrapper is being phased out. Use @/integrations/supabase/client directly.
+// Kept for backwards compatibility during migration.
 
-const SUPABASE_URL = "https://yrndifsbsmpvmpudglcc.supabase.co";
-const SITE_URL = (import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
+import { supabase, authRedirectTo } from '@/integrations/supabase/client';
 
-// Lightweight live check (CORS/redirect/cert)
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://yrndifsbsmpvmpudglcc.supabase.co";
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Lightweight health check with proper headers
 export async function assertSupabaseReachable(timeoutMs = 5000) {
   const controller = new AbortController();
   const t = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const url = new URL('/auth/v1/health', SUPABASE_URL);
-    const r = await fetch(url.toString(), { signal: controller.signal, credentials: 'omit' });
-    if (!r.ok) throw new Error(`Health ${r.status}`);
+    // CRITICAL: Health endpoint requires apikey header
+    const r = await fetch(url.toString(), { 
+      signal: controller.signal, 
+      headers: {
+        'apikey': SUPABASE_ANON_KEY || ''
+      }
+    });
+    if (!r.ok) throw new Error(`Health ${r.status}: ${await r.text()}`);
+    return true;
+  } catch (e: any) {
+    console.error('[Health] Supabase unreachable:', e.message);
+    return false;
   } finally { 
     clearTimeout(t); 
   }
 }
 
-// Retry wrapper for sign-in/up actions
+// Retry wrapper for sign-in/up actions with exponential backoff
 export async function withAuthBackoff<T>(fn: () => Promise<T>, label: string): Promise<T> {
   const max = 4;
   let delay = 200;
   for (let i = 0; i < max; i++) {
     try { 
       return await fn(); 
-    } catch (e) {
-      if (i === max - 1) throw e;
+    } catch (e: any) {
+      if (i === max - 1) {
+        console.error(`[Auth] ${label} failed after ${max} attempts:`, e);
+        throw e;
+      }
       await new Promise(r => setTimeout(r, delay));
       delay *= 2;
     }
@@ -33,8 +48,5 @@ export async function withAuthBackoff<T>(fn: () => Promise<T>, label: string): P
   throw new Error(`[auth] ${label} exhausted retries`);
 }
 
-// Auth redirect helper
-export const authRedirectTo = (path = '/auth') => `${SITE_URL}${path}`;
-
-// Re-export existing client
-export { supabase };
+// Re-export for backwards compatibility
+export { supabase, authRedirectTo };
