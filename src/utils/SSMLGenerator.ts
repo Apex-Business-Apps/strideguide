@@ -149,7 +149,7 @@ export class SSMLGenerator {
    */
   static sceneDescription(description: string): string {
     // Add natural pauses at commas and periods
-    let enhanced = description
+    const enhanced = description
       .replace(/,/g, `,${this.breakStrength('x-weak')}`)
       .replace(/\./g, `.${this.breakStrength('weak')}`);
 

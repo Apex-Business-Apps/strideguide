@@ -84,7 +84,7 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
         });
         
         // Enhanced error messages for mobile data issues
-        let userMessage = error.message;
+        const userMessage = error.message;
         if (error.message.includes("Invalid login credentials") || error.status === 400) {
           setError("Email or password is incorrect.");
         } else if (error.message.includes("Failed to fetch") || error.name === "TypeError") {
