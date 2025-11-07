@@ -85,33 +85,15 @@ export const usePWA = () => {
   const [swStatus, setSwStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => {
+    // SECURITY FIX: Removed duplicate SW registration
+    // Service worker is registered in src/sw/register.ts
+    // This hook now only checks for SW support
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered:', registration);
-          setSwStatus('ready');
-          
-          // Check for updates
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New content available, refresh to activate
-                  if (confirm('New version available! Refresh to update?')) {
-                    window.location.reload();
-                  }
-                }
-              });
-            }
-          });
-        })
-        .catch((error) => {
-          console.error('SW registration failed:', error);
-          setSwStatus('error');
-        });
+      setSwStatus('ready');
+      console.log('[usePWA] Service Worker supported, registered via src/sw/register.ts');
     } else {
       setSwStatus('error');
+      console.warn('[usePWA] Service Worker not supported in this browser');
     }
   }, []);
 

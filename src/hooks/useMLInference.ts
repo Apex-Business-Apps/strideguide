@@ -253,10 +253,16 @@ export function useMLInference() {
 
       const searchTime = performance.now() - t0;
       tObserve('search_ms', searchTime);
-      
+
       if (best) {
         console.log(`[useMLInference] ✓ Item found: ${best.className} (${(best.similarity*100).toFixed(1)}% match)`);
       }
+
+      // MEMORY FIX: Explicitly cleanup canvases to prevent memory leaks
+      sourceCanvas.width = 0;
+      sourceCanvas.height = 0;
+      cropCanvas.width = 0;
+      cropCanvas.height = 0;
 
       return best;
     } catch (err) {

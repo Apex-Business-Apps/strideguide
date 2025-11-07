@@ -40,10 +40,16 @@ self.addEventListener("fetch", (e) => {
   if (!ALLOW.some(rx => rx.test(url.pathname))) return;
 
   e.respondWith(caches.open(CACHE).then(async (c) => {
+    // Cache-first strategy for hashed static assets
     const hit = await c.match(r, { ignoreSearch: true });
     if (hit) return hit;
-    const res = await fetch(r, { cache: "no-store" });
-    if (res && res.ok) c.put(r, res.clone());
+
+    // SECURITY FIX: Removed cache: "no-store" contradiction
+    // Fetch fresh version and cache it
+    const res = await fetch(r);
+    if (res && res.ok) {
+      c.put(r, res.clone());
+    }
     return res;
   }));
 });
