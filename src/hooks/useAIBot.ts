@@ -49,9 +49,9 @@ export const useAIBot = (user: User | null) => {
     initializationRef.current = true;
     logger.info('AI Bot: Starting initialization', { userId: user.id });
 
-    setState(prev => ({ 
-      ...prev, 
-      isLoading: true, 
+    setState(prev => ({
+      ...prev,
+      isLoading: true,
       error: null,
       connectionAttempts: prev.connectionAttempts + 1
     }));
@@ -89,16 +89,22 @@ export const useAIBot = (user: User | null) => {
         logger.info('AI chat edge calls disabled via feature flag');
       }
 
-      setState(prev => ({ 
-        ...prev, 
-        isConnected: true, 
+      // Clear any pending reconnection timeout on success
+      if (reconnectionTimeoutRef.current) {
+        clearTimeout(reconnectionTimeoutRef.current);
+        reconnectionTimeoutRef.current = null;
+      }
+
+      setState(prev => ({
+        ...prev,
+        isConnected: true,
         isLoading: false,
         error: null,
         connectionAttempts: 0
       }));
 
       logger.info('AI Bot: Successfully initialized');
-      
+
       toast({
         title: "AI Assistant Ready",
         description: "Your AI assistant is now available",
@@ -107,33 +113,37 @@ export const useAIBot = (user: User | null) => {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('AI Bot initialization failed', { error: errorMessage });
-      
-      setState(prev => ({ 
-        ...prev, 
-        isConnected: false, 
-        isLoading: false,
-        error: errorMessage
-      }));
 
-      // Attempt reconnection if within limits
-      if (state.connectionAttempts < MAX_RECONNECTION_ATTEMPTS) {
-        logger.info('AI Bot: Scheduling reconnection', { attempt: state.connectionAttempts + 1 });
-        reconnectionTimeoutRef.current = setTimeout(() => {
-          initializationRef.current = false;
-          initializeBot();
-        }, RECONNECTION_DELAY * state.connectionAttempts);
-      } else {
-        logger.error('AI Bot: Max reconnection attempts reached');
-        toast({
-          title: "AI Assistant Unavailable",
-          description: "Unable to connect to AI services. Some features may be limited.",
-          variant: "destructive",
-        });
-      }
+      setState(prev => {
+        const currentAttempts = prev.connectionAttempts;
+
+        // Attempt reconnection if within limits
+        if (currentAttempts < MAX_RECONNECTION_ATTEMPTS) {
+          logger.info('AI Bot: Scheduling reconnection', { attempt: currentAttempts + 1 });
+          reconnectionTimeoutRef.current = setTimeout(() => {
+            initializationRef.current = false;
+            initializeBot();
+          }, RECONNECTION_DELAY * currentAttempts);
+        } else {
+          logger.error('AI Bot: Max reconnection attempts reached');
+          toast({
+            title: "AI Assistant Unavailable",
+            description: "Unable to connect to AI services. Some features may be limited.",
+            variant: "destructive",
+          });
+        }
+
+        return {
+          ...prev,
+          isConnected: false,
+          isLoading: false,
+          error: errorMessage
+        };
+      });
     } finally {
       initializationRef.current = false;
     }
-  }, [user, state.connectionAttempts, toast, flags.enableEdgeCheck]);
+  }, [user, toast, flags.enableEdgeCheck]);
 
   // Initialize bot when user changes or component mounts
   useEffect(() => {
@@ -142,6 +152,11 @@ export const useAIBot = (user: User | null) => {
       initializeBot();
     } else if (!user) {
       logger.debug('AI Bot: User signed out, disconnecting bot');
+      // Clear any pending timeout
+      if (reconnectionTimeoutRef.current) {
+        clearTimeout(reconnectionTimeoutRef.current);
+        reconnectionTimeoutRef.current = null;
+      }
       setState({
         isActive: false,
         isConnected: false,
@@ -157,9 +172,10 @@ export const useAIBot = (user: User | null) => {
     return () => {
       if (reconnectionTimeoutRef.current) {
         clearTimeout(reconnectionTimeoutRef.current);
+        reconnectionTimeoutRef.current = null;
       }
     };
-  }, [user, initializeBot, state.isConnected, state.isLoading]);
+  }, [user, state.isConnected, state.isLoading, initializeBot]);
 
   // Monitor authentication state changes
   useEffect(() => {

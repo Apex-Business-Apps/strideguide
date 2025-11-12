@@ -162,7 +162,7 @@ class TelemetryTracker {
         duration_ms: trace.duration_ms,
         error_message: trace.error,
         metadata: trace.metadata || {},
-      } as any);
+      });
     } catch (error) {
       // Silent fail
       if (import.meta.env.DEV) {
@@ -189,7 +189,7 @@ class TelemetryTracker {
         duration_ms,
         ok,
         metadata: metadata || {},
-      } as any);
+      });
     } catch (error) {
       // Silent fail
       if (import.meta.env.DEV) {

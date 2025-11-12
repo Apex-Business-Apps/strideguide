@@ -47,7 +47,7 @@ async function withTimeout<T>(
  * Wrap a Supabase query with timeout
  */
 export async function queryWithTimeout<T>(
-  queryBuilder: any,
+  queryBuilder: Promise<{ data: T | null; error: Error | null }>,
   timeoutMs: number = DEFAULT_QUERY_TIMEOUT,
   queryInfo?: string
 ): Promise<{ data: T | null; error: Error | null }> {
@@ -82,7 +82,7 @@ export async function executeWithTimeout<T>(
  */
 export async function executeBatchQueries<T>(
   queries: Array<{
-    builder: any;
+    builder: Promise<{ data: unknown; error: Error | null }>;
     timeout?: number;
     name?: string;
   }>
@@ -118,7 +118,7 @@ export function createTimeoutQuery(defaultTimeout: number = DEFAULT_QUERY_TIMEOU
      * Execute single query with timeout
      */
     async single<T>(
-      queryBuilder: any,
+      queryBuilder: Promise<{ data: T | null; error: Error | null }>,
       timeout?: number
     ): Promise<{ data: T | null; error: Error | null }> {
       return queryWithTimeout(queryBuilder, timeout || defaultTimeout);
@@ -129,7 +129,7 @@ export function createTimeoutQuery(defaultTimeout: number = DEFAULT_QUERY_TIMEOU
      */
     async batch<T>(
       queries: Array<{
-        builder: any;
+        builder: Promise<{ data: unknown; error: Error | null }>;
         timeout?: number;
         name?: string;
       }>
@@ -142,7 +142,7 @@ export function createTimeoutQuery(defaultTimeout: number = DEFAULT_QUERY_TIMEOU
      */
     async withCircuitBreaker<T>(
       serviceName: string,
-      queryBuilder: any,
+      queryBuilder: Promise<{ data: T | null; error: Error | null }>,
       timeout?: number
     ): Promise<{ data: T | null; error: Error | null }> {
       const { withCircuitBreaker } = await import('./CircuitBreaker');
