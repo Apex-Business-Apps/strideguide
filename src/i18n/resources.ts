@@ -1,12 +1,24 @@
 export const resources = {
   en: {
     translation: {
-      "onboarding.step": "Step",
-      "onboarding.skip": "Skip",
-      "onboarding.welcome.title": "Welcome to StrideGuide",
-      "onboarding.welcome.content": "We'll guide you with clear voice and vibration.",
-      "onboarding.playAudio": "Play sample audio",
+      "onboarding.step": "{n} of {total}",
       "onboarding.next": "Next",
+      "onboarding.previous": "Back",
+      "onboarding.skip": "Skip tutorial",
+      "onboarding.playAudio": "Hear this message",
+      "onboarding.finish": "Finish",
+      "onboarding.welcome.title": "Welcome to StrideGuide",
+      "onboarding.welcome.content": "I'll guide you with short sounds and clear directions. You can use me offline, in English or French.",
+      "onboarding.perms.title": "Allow camera and sound",
+      "onboarding.perms.content": "The camera helps me see obstacles. Tap once to allow sound so I can speak and beep.",
+      "onboarding.start.title": "Start & Stop",
+      "onboarding.start.content": "Tap the big Start button to begin guidance. Tap again to stop. You will hear beeps after you allow sound.",
+      "onboarding.finder.title": "Find your items",
+      "onboarding.finder.content": "Teach me your keys with a few photos. I'll beep faster and say \"Found keys\" when they're centered.",
+      "onboarding.sos.title": "SOS help",
+      "onboarding.sos.content": "Press and hold the SOS button for 1 second. Release to cancel. I'll open a text to your emergency contact.",
+      "onboarding.done.title": "You're ready",
+      "onboarding.done.content": "Big buttons. Clear sounds. Works offline. You can replay this tutorial anytime in Settings.",
       "sos.instructions.title": "Emergency Help",
       "sos.instructions.step1": "Find a safe spot.",
       "sos.instructions.step2": "Press and hold the red button.",
@@ -14,17 +26,30 @@ export const resources = {
       "sos.button": "Hold for SOS",
       "sos.holdInstruction": "Press and hold to trigger SOS.",
       "sos.emergencyContact": "Emergency Services",
-      "sos.worksOffline": "Works without data"
+      "sos.worksOffline": "Works without data",
+      "audio.tapToArm": "Tap once to allow sound"
     }
   },
   fr: {
     translation: {
-      "onboarding.step": "Étape",
-      "onboarding.skip": "Ignorer",
-      "onboarding.welcome.title": "Bienvenue sur StrideGuide",
-      "onboarding.welcome.content": "Guidage vocal et vibration clairs.",
-      "onboarding.playAudio": "Lire un exemple audio",
+      "onboarding.step": "{n} sur {total}",
       "onboarding.next": "Suivant",
+      "onboarding.previous": "Retour",
+      "onboarding.skip": "Passer le tutoriel",
+      "onboarding.playAudio": "Écouter ce message",
+      "onboarding.finish": "Terminer",
+      "onboarding.welcome.title": "Bienvenue dans StrideGuide",
+      "onboarding.welcome.content": "Je vous guide avec des sons courts et des instructions claires. J'opère hors ligne, en anglais ou en français.",
+      "onboarding.perms.title": "Autoriser la caméra et le son",
+      "onboarding.perms.content": "La caméra m'aide à voir les obstacles. Touchez une fois pour autoriser le son afin que je puisse parler et biper.",
+      "onboarding.start.title": "Démarrer & Arrêter",
+      "onboarding.start.content": "Touchez le grand bouton Démarrer pour lancer le guidage. Touchez encore pour arrêter. Vous entendrez des bips après l'autorisation du son.",
+      "onboarding.finder.title": "Retrouver vos objets",
+      "onboarding.finder.content": "Enseignez-moi vos clés avec quelques photos. Je biperai plus vite et dirai « Clés trouvées » lorsqu'elles seront centrées.",
+      "onboarding.sos.title": "Aide SOS",
+      "onboarding.sos.content": "Maintenez le bouton SOS pendant 1 seconde. Relâchez pour annuler. J'ouvrirai un SMS à votre contact d'urgence.",
+      "onboarding.done.title": "C'est parti",
+      "onboarding.done.content": "Grands boutons. Sons clairs. Hors ligne. Vous pouvez rejouer ce tutoriel dans Réglages.",
       "sos.instructions.title": "Aide d'urgence",
       "sos.instructions.step1": "Cherchez un endroit sûr.",
       "sos.instructions.step2": "Maintenez le bouton rouge.",
@@ -32,7 +57,8 @@ export const resources = {
       "sos.button": "Maintenir pour SOS",
       "sos.holdInstruction": "Maintenez pour déclencher SOS.",
       "sos.emergencyContact": "Services d'urgence",
-      "sos.worksOffline": "Fonctionne sans données"
+      "sos.worksOffline": "Fonctionne sans données",
+      "audio.tapToArm": "Touchez une fois pour autoriser le son"
     }
   }
 } as const;
