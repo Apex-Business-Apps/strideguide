@@ -15,7 +15,7 @@ export interface AuthErrorResult {
  * Priority: Specific message patterns → Status codes → Fallback
  */
 export function handleAuthError(
-  error: any,
+  error: Error & { status?: number; name?: string },
   correlationId: string,
   context: "signin" | "signup" | "reset"
 ): AuthErrorResult {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { VisualSignature, createSignature, estimateProximity } from '@/utils/VisualFingerprint';
 
 export interface LearnedItem {
@@ -304,6 +304,23 @@ export const useLostItemFinder = () => {
   // Update settings
   const updateSettings = useCallback((newSettings: Partial<FinderSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
+  }, []);
+
+  // Cleanup intervals and video stream on unmount
+  useEffect(() => {
+    return () => {
+      // Clear search interval if running
+      if (searchInterval.current) {
+        clearInterval(searchInterval.current);
+        searchInterval.current = null;
+      }
+
+      // Stop video stream if active
+      if (videoStream.current) {
+        videoStream.current.getTracks().forEach(track => track.stop());
+        videoStream.current = null;
+      }
+    };
   }, []);
 
   return {
