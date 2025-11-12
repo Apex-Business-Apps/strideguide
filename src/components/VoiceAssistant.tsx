@@ -137,16 +137,31 @@ const VoiceAssistant = () => {
   const endConversation = () => {
     console.log('Ending conversation...');
     
+    // Stop recorder
     recorderRef.current?.stop();
     recorderRef.current = null;
     
-    wsRef.current?.close();
-    wsRef.current = null;
+    // Close WebSocket
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
     
-    audioContextRef.current?.close();
-    audioContextRef.current = null;
+    // Close audio context
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
     
+    // Clear audio queue
     clearAudioQueue();
+    
+    // Cancel any speech synthesis
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    
+    // Reset state
     setIsConnected(false);
     setIsAssistantSpeaking(false);
     setIsMuted(false);

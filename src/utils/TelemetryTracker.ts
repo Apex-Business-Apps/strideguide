@@ -156,13 +156,13 @@ class TelemetryTracker {
       const user = (await supabase.auth.getUser()).data.user;
       if (!user) return; // Anonymous users not tracked
 
-      await supabase.from('journey_traces').insert({
+      await supabase.from('journey_traces').insert([{
         journey_name: trace.journey,
         status: trace.status,
         duration_ms: trace.duration_ms,
         error_message: trace.error,
         metadata: trace.metadata || {},
-      });
+      }] as never);
     } catch (error) {
       // Silent fail
       if (import.meta.env.DEV) {
@@ -184,12 +184,12 @@ class TelemetryTracker {
       const user = (await supabase.auth.getUser()).data.user;
       if (!user) return;
 
-      await supabase.from('app_metrics').insert({
+      await supabase.from('app_metrics').insert([{
         event,
         duration_ms,
         ok,
         metadata: metadata || {},
-      });
+      }] as never);
     } catch (error) {
       // Silent fail
       if (import.meta.env.DEV) {

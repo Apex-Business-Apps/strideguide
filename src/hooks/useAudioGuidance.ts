@@ -201,10 +201,24 @@ export const useAudioGuidance = (options: AudioGuidanceOptions) => {
   // Cleanup on unmount or when audio is disabled
   useEffect(() => {
     return () => {
-      stopProximityBeacon();
-      if (oscillatorRef.current) {
-        oscillatorRef.current.stop();
+      // Cancel speech synthesis
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
       }
+      
+      // Stop proximity beacon
+      stopProximityBeacon();
+      
+      // Stop oscillator
+      if (oscillatorRef.current) {
+        try {
+          oscillatorRef.current.stop();
+        } catch (e) {
+          // Already stopped
+        }
+      }
+      
+      // Close audio context
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }

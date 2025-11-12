@@ -1,8 +1,10 @@
 /**
- * ErrorBoundary - Resilient top-level fallback with logging
+ * ErrorBoundary - Simple fallback (use EnhancedErrorBoundary for production)
+ * This is kept for backwards compatibility
  */
 
 import { Component, ReactNode } from "react";
+import { logger } from "@/utils/ProductionLogger";
 
 export class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
@@ -15,7 +17,11 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { hasError
   }
 
   componentDidCatch(err: Error, info: React.ErrorInfo) {
-    console.error("[ui-error]", err, info);
+    logger.error("[ui-error]", { 
+      error: err.message,
+      stack: err.stack,
+      componentStack: info.componentStack 
+    });
   }
   
   render() {

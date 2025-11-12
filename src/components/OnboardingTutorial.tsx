@@ -61,7 +61,8 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
         playStepAudio(0);
       }, 500);
     }
-  }, [currentStep, playStepAudio]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep]);
 
   const playStepAudio = useCallback(async (stepIndex: number) => {
     try {
