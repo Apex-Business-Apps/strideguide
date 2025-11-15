@@ -40,7 +40,7 @@ interface SettingsDashboardProps {
   replayTutorial?: () => void;
 }
 
-const SettingsDashboard: React.FC<SettingsDashboardProps> = ({ onBack, replayTutorial }) => {
+const SettingsDashboard: React.FC<SettingsDashboardProps> = ({ onBack: _onBack, replayTutorial: _replayTutorial }) => {
   const [lowEndMode, setLowEndMode] = React.useState(false);
   const [winterMode, setWinterMode] = React.useState(false);
   const [cloudDescribe, setCloudDescribe] = React.useState(false);
@@ -54,8 +54,8 @@ const SettingsDashboard: React.FC<SettingsDashboardProps> = ({ onBack, replayTut
   const [remoteRowCount, setRemoteRowCount] = React.useState(0);
   const [isClearing, setIsClearing] = React.useState(false);
   const { toast } = useToast();
-  
-  const journeyTrace = useJourneyTrace('settings_save', { component: 'SettingsDashboard' });
+
+  const _journeyTrace = useJourneyTrace('settings_save', { component: 'SettingsDashboard' });
 
   // Update health status and battery info
   React.useEffect(() => {

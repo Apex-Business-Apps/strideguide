@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -14,8 +14,8 @@ interface OnboardingTutorialProps {
 export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete, onSkip }) => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
-  
-  const steps = [
+
+  const steps = useMemo(() => [
     {
       titleKey: "onboarding.welcome.title",
       contentKey: "onboarding.welcome.content",
@@ -52,7 +52,7 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
       audio: "tutorial-complete",
       action: "finish"
     }
-  ];
+  ], []);
 
   // Auto-play audio for first step
   useEffect(() => {

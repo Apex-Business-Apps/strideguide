@@ -183,7 +183,7 @@ export function validateCloudRequest(request: {
   return { valid: true };
 }
 
-export function createSafeErrorMessage(originalError: string): string {
+export function createSafeErrorMessage(_originalError: string): string {
   // Never expose internal error details
   const safeMessages = [
     'Unable to process request at this time.',

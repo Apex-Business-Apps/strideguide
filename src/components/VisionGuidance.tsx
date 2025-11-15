@@ -106,7 +106,7 @@ const VisionGuidance: React.FC<VisionGuidanceProps> = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, isAutoAnalyzing, autoAnalyzeInterval, handleAnalyze]);
+  }, [isActive, isAutoAnalyzing, autoAnalyzeInterval, handleAnalyze, videoRef]);
 
   const toggleAutoAnalyze = () => {
     setIsAutoAnalyzing(prev => !prev);

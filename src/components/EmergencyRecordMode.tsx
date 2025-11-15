@@ -6,16 +6,13 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { 
-  Video, 
-  VideoOff, 
-  Mic, 
-  MicOff, 
-  Shield, 
-  Clock, 
-  HardDrive,
+import {
+  Video,
+  Mic,
+  MicOff,
+  Shield,
+  Clock,
   Eye,
-  AlertTriangle,
   Play,
   Square,
   Volume2
@@ -34,7 +31,7 @@ const EmergencyRecordMode = () => {
     storageUsed,
     isInitialized,
     storagePercentage,
-    canRecord,
+    canRecord: _canRecord,
     needsConsent,
     hasPreEventBuffer,
     startRecording,
@@ -42,7 +39,7 @@ const EmergencyRecordMode = () => {
   } = useEmergencyRecording();
 
   const [showConsentModal, setShowConsentModal] = useState(false);
-  const [consentGiven, setConsentGiven] = useState(false);
+  const [_consentGiven, setConsentGiven] = useState(false);
   const { toast } = useToast();
 
   // Handle consent for all-party states

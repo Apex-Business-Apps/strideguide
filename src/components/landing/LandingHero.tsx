@@ -10,7 +10,7 @@ interface LandingHeroProps {
 }
 
 export const LandingHero: React.FC<LandingHeroProps> = ({ onInstall, onSeePremium }) => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'fr' : 'en';

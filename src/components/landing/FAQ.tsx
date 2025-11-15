@@ -1,6 +1,5 @@
 // @stride/faq v1
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionContent,
@@ -9,7 +8,6 @@ import {
 } from '@/components/ui/accordion';
 
 export const FAQ: React.FC = () => {
-  const { t } = useTranslation();
 
   const faqs = [
     { 

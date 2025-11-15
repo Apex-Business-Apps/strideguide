@@ -151,7 +151,7 @@ export const rateLimiter = new RateLimiter();
  * Decorator for rate-limited functions
  */
 export function rateLimit(config: RateLimitConfig) {
-  return function <T extends (...args: unknown[]) => unknown>(
+  return function <_T extends (...args: unknown[]) => unknown>(
     target: unknown,
     propertyKey: string,
     descriptor: PropertyDescriptor

@@ -221,8 +221,8 @@ export class SSMLGenerator {
 
     // Create a test utterance with SSML
     const testSSML = '<speak>test</speak>';
-    const utterance = new SpeechSynthesisUtterance(testSSML);
-    
+    const _utterance = new SpeechSynthesisUtterance(testSSML);
+
     // Most modern browsers support SSML in some capacity
     // This is a basic check - actual support varies
     return true;

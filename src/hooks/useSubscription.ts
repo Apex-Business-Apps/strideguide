@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { logger } from "@/utils/ProductionLogger";
 import { useAdminAccess } from "@/hooks/useAdminAccess";
 
@@ -27,21 +26,11 @@ interface UseSubscriptionReturn {
 }
 
 export const useSubscription = (user: User | null): UseSubscriptionReturn => {
-  const { toast } = useToast();
   const { isAdmin } = useAdminAccess(user);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      loadSubscription();
-    } else {
-      setSubscription(null);
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  const loadSubscription = async () => {
+  const loadSubscription = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -78,7 +67,16 @@ export const useSubscription = (user: User | null): UseSubscriptionReturn => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadSubscription();
+    } else {
+      setSubscription(null);
+      setIsLoading(false);
+    }
+  }, [user, loadSubscription]);
 
   const hasFeatureAccess = (featureName: string): boolean => {
     if (!user || !subscription) return false;
@@ -103,7 +101,7 @@ export const useSubscription = (user: User | null): UseSubscriptionReturn => {
     return requiredLevel ? planLevel >= requiredLevel : true;
   };
 
-  const checkUsageLimit = async (endpoint: string): Promise<boolean> => {
+  const checkUsageLimit = async (_endpoint: string): Promise<boolean> => {
     if (!user || !subscription) return false;
 
     // Admins have unlimited access

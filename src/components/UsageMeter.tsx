@@ -11,7 +11,7 @@ const UsageMeter = () => {
   const [usedMinutes, setUsedMinutes] = React.useState(45); // 45 minutes used today
   const [isPremium, setIsPremium] = React.useState(false);
   const { toast } = useToast();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const dailyLimitMinutes = isPremium ? 480 : 120; // 8h vs 2h in minutes
   const remainingMinutes = dailyLimitMinutes - usedMinutes;

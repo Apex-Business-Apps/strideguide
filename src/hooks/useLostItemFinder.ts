@@ -99,7 +99,7 @@ export const useLostItemFinder = () => {
   }, []);
 
   // Start teaching a new item
-  const startTeaching = useCallback(async (itemName: string) => {
+  const startTeaching = useCallback(async (_itemName: string) => {
     setIsTeaching(true);
     setTeachProgress(0);
     capturedSignatures.current = [];

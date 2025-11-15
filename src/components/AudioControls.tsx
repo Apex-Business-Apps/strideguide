@@ -13,7 +13,7 @@ const AudioControls = () => {
   const [isMuted, setIsMuted] = React.useState(false);
   const [language, setLanguage] = React.useState<'en' | 'fr'>('en');
   const [stereoMode, setStereoMode] = React.useState(true);
-  const [lastCue, setLastCue] = React.useState('Veer left to avoid pothole');
+  const [lastCue, _setLastCue] = React.useState('Veer left to avoid pothole');
 
   const handleVolumeChange = (newValue: number[]) => {
     setVolume(newValue);

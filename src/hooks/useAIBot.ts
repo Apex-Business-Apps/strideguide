@@ -58,7 +58,7 @@ export const useAIBot = (user: User | null) => {
 
     try {
       // Test Supabase connection
-      const { data: testData, error: testError } = await supabase
+      const { data: _testData, error: testError } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', user.id)
@@ -74,7 +74,7 @@ export const useAIBot = (user: User | null) => {
       // Test AI chat function availability (skipped if edge disabled)
       if (flags.enableEdgeCheck) {
         try {
-          const { data: testData, error: functionError } = await supabase.functions.invoke('ai-chat', {
+          const { data: _testData, error: functionError } = await supabase.functions.invoke('ai-chat', {
             body: { messages: [{ role: 'user', content: 'test' }] }
           });
           if (functionError) {
@@ -267,7 +267,7 @@ export const useAIBot = (user: User | null) => {
         variant: "destructive",
       });
     }
-  }, [state.isConnected, user, state.messages, toast, flags.enableEdgeCheck, supabase]);
+  }, [state.isConnected, user, state.messages, toast, flags.enableEdgeCheck]);
 
   const retryConnection = useCallback(() => {
     setState(prev => ({ ...prev, connectionAttempts: 0, error: null }));

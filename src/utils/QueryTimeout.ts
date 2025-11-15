@@ -3,10 +3,8 @@
  * Adds configurable timeouts to database queries
  */
 
-import { PostgrestBuilder } from '@supabase/postgrest-js';
-
 const DEFAULT_QUERY_TIMEOUT = 5000; // 5 seconds
-const LONG_QUERY_TIMEOUT = 30000; // 30 seconds for complex queries
+const _LONG_QUERY_TIMEOUT = 30000; // 30 seconds for complex queries
 
 /**
  * Error thrown when query times out
@@ -69,18 +67,18 @@ export async function queryWithTimeout<T>(
 /**
  * Execute a function with timeout
  */
-export async function executeWithTimeout<T>(
-  fn: () => Promise<T>,
+export async function executeWithTimeout<_T>(
+  fn: () => Promise<_T>,
   timeoutMs: number = DEFAULT_QUERY_TIMEOUT,
   operationName?: string
-): Promise<T> {
+): Promise<_T> {
   return withTimeout(fn(), timeoutMs, operationName);
 }
 
 /**
  * Batch query executor with timeout per query
  */
-export async function executeBatchQueries<T>(
+export async function executeBatchQueries<_T>(
   queries: Array<{
     builder: Promise<{ data: unknown; error: Error | null }>;
     timeout?: number;
@@ -117,17 +115,17 @@ export function createTimeoutQuery(defaultTimeout: number = DEFAULT_QUERY_TIMEOU
     /**
      * Execute single query with timeout
      */
-    async single<T>(
-      queryBuilder: Promise<{ data: T | null; error: Error | null }>,
+    async single<_T>(
+      queryBuilder: Promise<{ data: _T | null; error: Error | null }>,
       timeout?: number
-    ): Promise<{ data: T | null; error: Error | null }> {
+    ): Promise<{ data: _T | null; error: Error | null }> {
       return queryWithTimeout(queryBuilder, timeout || defaultTimeout);
     },
 
     /**
      * Execute multiple queries in batch
      */
-    async batch<T>(
+    async batch<_T>(
       queries: Array<{
         builder: Promise<{ data: unknown; error: Error | null }>;
         timeout?: number;

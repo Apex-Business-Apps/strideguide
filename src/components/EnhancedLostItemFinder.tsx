@@ -1,29 +1,26 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Search, 
-  BookOpen, 
-  Camera, 
-  Volume2, 
-  VolumeX, 
-  Vibrate, 
+import {
+  Search,
+  BookOpen,
+  Volume2,
+  VolumeX,
+  Vibrate,
   Lock,
   Trash2,
   Moon,
   Sun,
-  Zap 
+  Zap
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useLostItemFinder, LearnedItem } from '@/hooks/useLostItemFinder';
+import { useLostItemFinder } from '@/hooks/useLostItemFinder';
 import { useMLInference } from '@/hooks/useMLInference';
 import { useAudioGuidance } from '@/hooks/useAudioGuidance';
 import { CameraView } from './CameraView';
-import { useJourneyTrace } from '@/hooks/useJourneyTrace';
 
 interface Props {
   isPremium?: boolean;
@@ -52,7 +49,7 @@ export const EnhancedLostItemFinder: React.FC<Props> = ({
     startSearching,
     stopSearching,
     deleteLearnedItem,
-    updateSettings
+    updateSettings: _updateSettings
   } = useLostItemFinder();
 
   const mode = isTeaching ? 'teach' : isSearching ? 'search' : 'idle';
@@ -66,19 +63,12 @@ export const EnhancedLostItemFinder: React.FC<Props> = ({
   });
 
   // REAL ML processing - removed simulated detection
-  const handleCameraFrame = useCallback(async (imageData: ImageData) => {
+  const handleCameraFrame = useCallback(async (_imageData: ImageData) => {
     // Real ML integrated through useLostItemFinder hook
     if (currentSearchResult && audioEnabled) {
       audioGuidance.playDirectionalTone(currentSearchResult.direction, currentSearchResult.confidence);
     }
   }, [currentSearchResult, audioEnabled, audioGuidance]);
-
-  const getHapticPattern = (distance: number): number[] => {
-    if (distance < 0.2) return [100, 50, 100, 50, 100]; // Very close - rapid pulses
-    if (distance < 0.4) return [150, 100, 150]; // Close - medium pulses
-    if (distance < 0.7) return [200, 200, 200]; // Medium - slow pulses
-    return [300]; // Far - single pulse
-  };
 
   const handleStartTeaching = () => {
     if (!isPremium && learnedItems.length >= 1) {

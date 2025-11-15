@@ -1,11 +1,9 @@
 // @stride/install-guide v1
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Smartphone, Share2 } from 'lucide-react';
 
 export const InstallGuide: React.FC = () => {
-  const { t } = useTranslation();
 
   const steps = [
     {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Toast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -49,13 +48,13 @@ export const EnhancedNotificationSystem: React.FC<NotificationSystemProps> = ({
   notifications,
   onNotificationDismiss,
   onNotificationAcknowledge,
-  onSystemMute,
+  _onSystemMute,
   onSystemPause,
   isMuted,
   isPaused,
   isPremium,
 }) => {
-  const { toast } = useToast();
+  const { toast: _toast } = useToast();
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [groupedNotifications, setGroupedNotifications] = useState<{
     critical: EnhancedNotification[];

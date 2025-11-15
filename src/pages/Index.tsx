@@ -2,22 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Mic, 
-  Navigation, 
-  Search, 
-  Settings, 
-  Shield, 
-  Languages, 
-  Phone,
+import {
+  Search,
+  Settings,
+  Shield,
+  Languages,
   Bell,
   AlertTriangle,
   Zap,
   Bot,
   Eye,
   Menu,
-  MessageCircle,
-  Globe
+  MessageCircle
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { User } from '@supabase/supabase-js';
@@ -31,7 +27,6 @@ import { EnhancedLostItemFinder } from '@/components/EnhancedLostItemFinder';
 import VisionPanel from '@/components/VisionPanel';
 import { SOSInterface } from '@/components/SOSInterface';
 import { OnboardingTutorial } from '@/components/OnboardingTutorial';
-import { PWAInstaller } from '@/components/PWAInstaller';
 import { WakeLockIndicator } from '@/components/WakeLockIndicator';
 import UsageMeter from '@/components/UsageMeter';
 import { ActionPromptModal } from '@/components/modals/ActionPromptModal';
@@ -45,7 +40,6 @@ import { IOSInstallSheet } from '@/components/install/IOSInstallSheet';
 import { useAIBot } from '@/hooks/useAIBot';
 import { useSubscription } from '@/hooks/useSubscription';
 import { BatteryGuard } from '@/utils/BatteryGuard';
-import { SOSGuard } from '@/utils/SOSGuard';
 import { WakeLockManager } from '@/utils/WakeLockManager';
 import { AudioArmer } from '@/utils/AudioArmer';
 import { HealthManager } from '@/utils/HealthManager';
@@ -75,7 +69,7 @@ const Index: React.FC = () => {
   
   // Authentication state
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState(null);
+  const [_session, setSession] = useState(null);
   
   // Core state
   const [currentView, setCurrentView] = useState<'home' | 'guidance' | 'item-finder' | 'sos' | 'settings' | 'hazard-screen'>('home');
@@ -118,7 +112,7 @@ const Index: React.FC = () => {
   
   // Hooks
   const aiBot = useAIBot(user);
-  const { subscription, hasFeatureAccess } = useSubscription(user);
+  const { hasFeatureAccess } = useSubscription(user);
   
   const isPremiumUser = hasFeatureAccess('enhanced_notifications');
 
@@ -129,7 +123,7 @@ const Index: React.FC = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-    }).catch(() => {
+    }).catch((_error) => {
       // Silent fail - App.tsx handles auth state globally
     });
   }, []);
@@ -138,10 +132,10 @@ const Index: React.FC = () => {
   useEffect(() => {
     BatteryGuard.initialize();
     // SOSGuard is singleton, already initialized
-    
+
     // Track app entry with UTM attribution
     UTMTracker.trackAppEntry();
-    
+
     const unsubscribe = HealthManager.onHealthChange?.((status) => {
       if (status.overall === 'critical') {
         addNotification({
@@ -167,16 +161,16 @@ const Index: React.FC = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [addNotification]);
 
   // Monitor AI bot status
   useEffect(() => {
     if (aiBot.isConnected && user) {
       // Remove AI bot error notifications and add success
-      setNotifications(prev => 
+      setNotifications(prev =>
         prev.filter(n => !n.message.includes('AI') && !n.message.includes('bot'))
       );
-      
+
       addNotification({
         id: `ai-success-${Date.now()}`,
         type: 'success',
@@ -203,7 +197,7 @@ const Index: React.FC = () => {
         hasAudio: true,
       });
     }
-  }, [aiBot.isConnected, aiBot.error, user]);
+  }, [aiBot.isConnected, aiBot.error, user, addNotification]);
 
   // Notification management functions
   const addNotification = useCallback((notification: Omit<EnhancedNotification, 'id'> & { id?: string }) => {
@@ -257,7 +251,7 @@ const Index: React.FC = () => {
             setAudioArmed(true);
             closeModal();
             handleGuidanceToggle(); // Retry after audio is enabled
-          } catch (error) {
+          } catch (_error) {
             toast({
               title: 'Audio Failed',
               description: 'Unable to enable audio. Please check your device settings.',
@@ -297,7 +291,7 @@ const Index: React.FC = () => {
               requiresAcknowledgment: false,
               hasAudio: true,
             });
-          } catch (error) {
+          } catch (_error) {
             toast({
               title: 'Guidance Failed',
               description: 'Unable to start guidance. Please try again.',

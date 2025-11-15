@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { AlertTriangle, Phone, MessageSquare, MapPin, Clock, X } from 'lucide-react';
+import { AlertTriangle, Phone, MapPin, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface EmergencyContact {
@@ -17,7 +17,7 @@ interface EmergencyInterfaceProps {
   onBack?: () => void;
 }
 
-const EmergencyInterface: React.FC<EmergencyInterfaceProps> = ({ onBack }) => {
+const EmergencyInterface: React.FC<EmergencyInterfaceProps> = ({ onBack: _onBack }) => {
   const [fallDetected, setFallDetected] = React.useState(false);
   const [countdown, setCountdown] = React.useState(30);
   const [emergencyActive, setEmergencyActive] = React.useState(false);

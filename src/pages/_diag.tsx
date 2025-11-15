@@ -30,7 +30,7 @@ export default function Diag() {
         : { ok: false, status: 0, ms: 0, body: "VITE_SUPABASE_URL missing" };
       setRes({ health, options });
     })();
-  }, []);
+  }, [supabaseUrl]);
 
   return (
     <div style={{padding:"16px",fontFamily:"system-ui"}}>

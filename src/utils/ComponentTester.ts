@@ -167,12 +167,12 @@ export class ComponentTester {
 
   static testI18nSystem(): boolean {
     console.group('🌐 Testing Internationalization');
-    
+
     try {
       // Test if translations are loaded
-      const testKeyEN = 'app.name';
-      const testKeyFR = 'app.tagline';
-      
+      const _testKeyEN = 'app.name';
+      const _testKeyFR = 'app.tagline';
+
       console.log('Testing translation keys...');
       
       // This would be enhanced with actual i18n testing

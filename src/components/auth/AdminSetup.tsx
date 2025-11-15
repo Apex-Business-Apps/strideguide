@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, CheckCircle } from "lucide-react";
+import { Shield } from "lucide-react";
 
 interface AdminSetupProps {
   userId: string;
@@ -54,7 +54,7 @@ export const AdminSetup = ({ userId, userEmail }: AdminSetupProps) => {
     setIsAssigning(true);
     try {
       // Call the admin role assignment function
-      const { data, error } = await supabase.rpc('assign_admin_role', {
+      const { data: _data, error } = await supabase.rpc('assign_admin_role', {
         target_user_id: userId,
         target_role: 'admin'
       });

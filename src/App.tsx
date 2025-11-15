@@ -60,7 +60,7 @@ const App = () => {
   useI18nGuard();
   
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<unknown>(null);
+  const [_session, setSession] = useState<unknown>(null);
   const [isLoading, setIsLoading] = useState(true);
   const effectiveUser = (DEV_CONFIG.BYPASS_AUTH ? (DEV_CONFIG.MOCK_USER as unknown as User) : null) || user;
 

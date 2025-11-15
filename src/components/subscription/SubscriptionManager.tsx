@@ -19,9 +19,9 @@ interface SubscriptionManagerProps {
 export const SubscriptionManager = ({ user }: SubscriptionManagerProps) => {
   const { toast } = useToast();
   const { isPaymentsEnabled, enableEdgeCheck } = useFeatureFlags() as { isPaymentsEnabled: boolean; enableEdgeCheck: boolean };
-  const { subscription, isLoading, refreshSubscription } = useSubscription(user);
+  const { subscription, isLoading, refreshSubscription: _refreshSubscription } = useSubscription(user);
   const [showPricing, setShowPricing] = useState(false);
-  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
+  const [_isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   const [usageData, setUsageData] = useState({ current: 0, limit: 0 });
 
   useEffect(() => {

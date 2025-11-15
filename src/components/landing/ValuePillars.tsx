@@ -1,11 +1,9 @@
 // @stride/value-pillars v1
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Navigation, Search, Phone } from 'lucide-react';
 
 export const ValuePillars: React.FC = () => {
-  const { t } = useTranslation();
 
   const pillars = [
     {

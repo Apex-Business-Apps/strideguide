@@ -2,7 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle, XCircle, AlertCircle, RefreshCw } from "lucide-react";
+import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
 
 interface DiagnosticResults {
   origin: string;
@@ -43,7 +43,7 @@ export function AuthDiagnosticsInline() {
       }
       const healthResp = await fetch(`${supabaseUrl}/auth/v1/health`, { cache: 'no-store' });
       results.healthStatus = healthResp.status;
-    } catch (err: unknown) {
+    } catch (_err: unknown) {
       results.healthStatus = 'FAILED';
     }
 
@@ -62,7 +62,7 @@ export function AuthDiagnosticsInline() {
     try {
       const { data } = await supabase.auth.getSession();
       results.hasSession = !!data.session;
-    } catch (err) {
+    } catch (_err) {
       results.hasSession = false;
     }
 

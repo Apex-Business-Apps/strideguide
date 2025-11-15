@@ -225,7 +225,7 @@ export const useAudioGuidance = (options: AudioGuidanceOptions) => {
       if (oscillatorRef.current) {
         try {
           oscillatorRef.current.stop();
-        } catch (e) {
+        } catch (_e) {
           // Already stopped
         }
       }

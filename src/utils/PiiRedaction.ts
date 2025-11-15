@@ -127,7 +127,7 @@ export function safeStringify(obj: unknown, space?: number): string {
   try {
     const redacted = redactObject(obj);
     return JSON.stringify(redacted, null, space);
-  } catch (error) {
+  } catch (_error) {
     return '[Error stringifying object]';
   }
 }

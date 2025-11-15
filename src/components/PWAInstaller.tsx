@@ -7,15 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { InstallManager } from '@/utils/InstallManager';
 
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
-  prompt(): Promise<void>;
-  readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
-    platform: string;
-  }>;
-}
-
 export const PWAInstaller: React.FC = () => {
   const [installState, setInstallState] = useState(InstallManager.getState());
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);

@@ -1,10 +1,10 @@
 import React from "react";
 
 export function SOSButton() {
-  const onMouseDown = (e: React.MouseEvent) => {
+  const onMouseDown = (_e: React.MouseEvent) => {
     // Could start a timer/vibration here if desired
   };
-  const onTouchStart = (e: React.TouchEvent) => {
+  const onTouchStart = (_e: React.TouchEvent) => {
     // Could start a timer/vibration here if desired
   };
   const onUp = () => {

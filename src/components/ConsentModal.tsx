@@ -16,7 +16,7 @@ import { DEV_CONFIG } from '@/config/dev';
 const CONSENT_KEY = 'stride_consent_v1';
 
 export default function ConsentModal() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [telemetryConsent, setTelemetryConsent] = useState(false);
   const isEnglish = i18n.language === 'en';

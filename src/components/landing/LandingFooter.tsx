@@ -9,7 +9,7 @@ interface LandingFooterProps {
 }
 
 export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApp }) => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'fr' : 'en';

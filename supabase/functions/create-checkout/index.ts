@@ -1,7 +1,7 @@
 import Stripe from "https://esm.sh/stripe@14?target=deno";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getCorsHeaders, ALLOWED_ORIGINS } from "../_shared/cors.ts";
-import { isValidRedirectUrl, sanitizeRedirectUrl } from "../_shared/url-validator.ts";
+import { sanitizeRedirectUrl } from "../_shared/url-validator.ts";
 
 Deno.serve(async (req: Request) => {
   // SECURITY FIX: Use proper CORS headers instead of wildcard

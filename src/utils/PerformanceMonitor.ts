@@ -58,7 +58,7 @@ class PerformanceMonitor {
       entryTypes.forEach(type => {
         try {
           this.observer?.observe({ type, buffered: true });
-        } catch (e) {
+        } catch (_e) {
           // Type not supported in this browser
         }
       });
@@ -143,7 +143,7 @@ class PerformanceMonitor {
 
     try {
       observer.observe({ type: 'resource', buffered: true });
-    } catch (e) {
+    } catch (_e) {
       // Not supported
     }
   }

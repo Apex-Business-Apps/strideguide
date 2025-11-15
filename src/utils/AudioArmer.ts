@@ -20,7 +20,7 @@ class AudioArmerClass {
         try {
           await this.audioContext.resume();
           console.log('AudioContext resumed successfully');
-        } catch (resumeError) {
+        } catch (_resumeError) {
           throw new Error('AudioContext suspended - user interaction required');
         }
       }
@@ -136,7 +136,7 @@ class AudioArmerClass {
   async cacheEarcons(): Promise<void> {
     if ('serviceWorker' in navigator && 'caches' in window) {
       try {
-        const cache = await caches.open('earcons-v1');
+        const _cache = await caches.open('earcons-v1');
         // In a real implementation, these would be actual audio files
         console.log('Earcons cached for offline use');
       } catch (error) {

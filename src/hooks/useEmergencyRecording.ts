@@ -63,10 +63,10 @@ export const useEmergencyRecording = () => {
       consentModalRequired: false
     };
     setPolicy(mockPolicy);
-    
+
     loadStoredSessions();
     setIsInitialized(true);
-  }, []);
+  }, [loadStoredSessions]);
 
   // Simulate ring buffer management (2-5 min pre-event)
   const maintainRingBuffer = useCallback(() => {
@@ -177,7 +177,7 @@ export const useEmergencyRecording = () => {
     // Send ICE SMS notification (simulated)
     await sendICENotification(trigger);
 
-  }, [policy, isRecording, settings, toast]);
+  }, [policy, isRecording, settings, toast, sendICENotification]);
 
   // Stop recording
   const stopRecording = useCallback(() => {
@@ -222,7 +222,7 @@ export const useEmergencyRecording = () => {
       description: `Session saved to Evidence Locker. Duration: ${Math.round((finalSession.endTime! - finalSession.startTime) / 1000)}s`,
     });
 
-  }, [isRecording, currentSession]);
+  }, [isRecording, currentSession, storeSession, toast]);
 
   // Send ICE SMS notification
   const sendICENotification = useCallback(async (trigger: string) => {

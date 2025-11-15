@@ -1,26 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Camera, Search, Volume2, Vibrate } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMLInference } from '@/hooks/useMLInference';
 import { SAFETY } from '@/config/safety';
 
-interface LearnedItem {
-  id: string;
-  name: string;
-  embedding: Float32Array;
-  createdAt: Date;
-}
-
 interface LostItemFinderProps {
   onBack?: () => void;
 }
 
-const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack }) => {
+const LostItemFinder: React.FC<LostItemFinderProps> = ({ onBack: _onBack }) => {
   const [running, setRunning] = useState(false);
-  const [learnedItems, setLearnedItems] = useState<LearnedItem[]>([]);
   const [targetEmb, setTargetEmb] = useState<Float32Array | null>(null);
   const [lastHit, setLastHit] = useState<{bbox:[number,number,number,number]; similarity:number}|null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);

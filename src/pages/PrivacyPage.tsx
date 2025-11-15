@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { SEOHead } from '@/components/SEOHead';
 
 export default function PrivacyPage() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const isEnglish = i18n.language === 'en';
 

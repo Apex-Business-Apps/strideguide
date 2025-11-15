@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +40,6 @@ const planColors = {
 };
 
 export const PricingPlans = ({ currentPlan, onSelectPlan }: PricingPlansProps) => {
-  const { t } = useTranslation();
   const { toast } = useToast();
   const { isPaymentsEnabled } = useFeatureFlags();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);

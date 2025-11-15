@@ -100,7 +100,7 @@ export class AccessibilityManager {
    * Handle keyboard navigation patterns
    */
   private handleKeyboardNavigation(event: KeyboardEvent): void {
-    const { key, ctrlKey, altKey, shiftKey } = event;
+    const { key, ctrlKey, altKey } = event;
     
     // Custom shortcuts for seniors/visually impaired
     if (ctrlKey && altKey) {

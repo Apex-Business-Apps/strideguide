@@ -1,10 +1,8 @@
 // @stride/why-section v1
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 
 export const WhyStrideGuide: React.FC = () => {
-  const { t } = useTranslation();
 
   const benefits = [
     'Works 100% offline - no data charges, no connection needed',

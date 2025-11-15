@@ -66,7 +66,13 @@ export async function loadRuntimeConfig(): Promise<RuntimeConfig> {
       });
 
       if (!response.ok) {
-        console.warn('[RuntimeConfig] Failed to load, using defaults:', response.status);
+        console.warn('[RuntimeConfig] HTTP error! status:', response.status);
+        return DEFAULT_CONFIG;
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/json')) {
+        console.warn('[RuntimeConfig] Response is not JSON, using defaults. Content-Type:', contentType);
         return DEFAULT_CONFIG;
       }
 

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { supabase, authRedirectTo } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +33,6 @@ interface AuthPageProps {
 }
 
 export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
-  const { t } = useTranslation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -95,13 +93,13 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       });
       
       onAuthSuccess();
-    } catch (error) {
-      logger.error("Unexpected sign-in exception", { correlationId, error });
-      
-      if (error instanceof z.ZodError) {
-        setError(error.errors[0].message);
+    } catch (_error) {
+      logger.error("Unexpected sign-in exception", { correlationId, error: _error });
+
+      if (_error instanceof z.ZodError) {
+        setError(_error.errors[0].message);
       } else {
-        const { message } = handleAuthError(error, correlationId, "signin");
+        const { message } = handleAuthError(_error, correlationId, "signin");
         setError(message);
       }
     } finally {
@@ -154,15 +152,15 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
         title: "Account created!",
         description: "Please check your email to verify your account.",
       });
-      
+
       setActiveTab("signin");
-    } catch (error) {
-      logger.error("Unexpected sign-up exception", { correlationId, error });
-      
-      if (error instanceof z.ZodError) {
-        setError(error.errors[0].message);
+    } catch (_error) {
+      logger.error("Unexpected sign-up exception", { correlationId, error: _error });
+
+      if (_error instanceof z.ZodError) {
+        setError(_error.errors[0].message);
       } else {
-        const { message } = handleAuthError(error, correlationId, "signup");
+        const { message } = handleAuthError(_error, correlationId, "signup");
         setError(message);
       }
     } finally {
@@ -196,7 +194,7 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
         title: "Password reset sent!",
         description: "Check your email for password reset instructions.",
       });
-    } catch (error) {
+    } catch (_error) {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
