@@ -1,7 +1,23 @@
-# Root Cause Analysis: 5-Minute Connection Errors in StrideGuide
+# Root Cause Analysis
 
-**Date**: 2025-01-06  
-**Issue**: App throwing repo/connection errors every 5 minutes  
+## Current Build Failures (2025-11-23)
+
+### 1) `npm install` fails while fetching `onnxruntime-node`
+- **What we saw:** `npm install` reports a warning about an unknown `http-proxy` npm env config and then aborts during the `onnxruntime-node` install script with `Error: connect ENETUNREACH 140.82.112.3:443` while attempting to download `onnxruntime-linux-x64-gpu-1.21.0.tgz` from GitHub. The script also notes "`nvcc` not found. Assuming CUDA 12." before the network failure occurs.【98a913†L1-L3】【21b861†L1-L30】
+- **Root cause:** Our dependency graph pulls in `@huggingface/transformers@3.7.3`, which depends on `onnxruntime-node@1.21.0`. That package's post-install script downloads prebuilt GPU binaries directly from GitHub. The container environment blocks outbound network access, so the download request to `github.com` fails with `ENETUNREACH`, stopping the install before any build can run.【F:package-lock.json†L955-L964】
+- **Impact:** No `node_modules` directory is created, so `npm run build`, `npm run lint`, or any tests cannot execute. The failure occurs before compilation and is fully blocking for local builds.
+- **Next steps to unblock:** Provide network access to `github.com` for the install step, or switch to a CPU-only/web backend that does not require the `onnxruntime-node` binary download (e.g., rely solely on `onnxruntime-web` or a hosted inference API if acceptable). If the proxy warning is unexpected, remove or correct the `npm_config_http_proxy` env var to avoid future npm config parsing errors.
+
+### 2) Known Lovable edge-function type-check warning (cosmetic)
+- **What is documented:** The repository already tracks a Lovable preview build warning: Deno type-checking of Supabase edge functions reports missing `openai@^4.52.5` types referenced transitively by `@supabase/functions-js`. The warning appears as a build error in previews but does not affect deployments.【F:KNOWN_BUILD_WARNINGS.md†L1-L104】
+- **Impact:** Cosmetic only; production deployments and Supabase edge functions remain healthy. No immediate action required unless the upstream package is updated to remove the type reference.
+
+---
+
+## Root Cause Analysis: 5-Minute Connection Errors in StrideGuide
+
+**Date**: 2025-01-06
+**Issue**: App throwing repo/connection errors every 5 minutes
 **Status**: ✅ FIXED
 
 ---
