@@ -12,6 +12,26 @@
 - **What is documented:** The repository already tracks a Lovable preview build warning: Deno type-checking of Supabase edge functions reports missing `openai@^4.52.5` types referenced transitively by `@supabase/functions-js`. The warning appears as a build error in previews but does not affect deployments.【F:KNOWN_BUILD_WARNINGS.md†L1-L104】
 - **Impact:** Cosmetic only; production deployments and Supabase edge functions remain healthy. No immediate action required unless the upstream package is updated to remove the type reference.
 
+### 3) Git repository pointed at renamed/missing origin (GitHub connection failures)
+- **What we saw:** The local repository had no `origin` remote configured after the upstream project was renamed/moved, so Loveable and local Git operations could not save or sync because the URL still referenced the previous repository name. Running `git remote -v` returned no remotes, confirming the missing/incorrect origin.【830b1a†L1-L2】
+- **Root cause:** The GitHub repository was migrated from `sinyorlang-design/strideguide` → `apexbusiness-systems/strideguide` → `apexbusiness-systems/strideguideai`, but the local configuration (and Loveable integration) remained on the old URL, leaving the repo without a valid `origin` target.
+- **Impact:**
+  - Loveable could not push edits or fetch the codebase.
+  - Local contributors could not push/pull, leading to perceived “cannot save” or “cannot connect” errors.
+- **Remediation implemented:** Pointed the existing/absent `origin` to the live repository. If an old origin exists, update it; if not, add it fresh:
+  ```bash
+  # If origin already exists, retarget it
+  git remote set-url origin https://github.com/apexbusiness-systems/strideguideai.git
+
+  # If origin is missing, add it
+  git remote add origin https://github.com/apexbusiness-systems/strideguideai.git
+
+  git remote -v
+  # origin  https://github.com/apexbusiness-systems/strideguideai.git (fetch)
+  # origin  https://github.com/apexbusiness-systems/strideguideai.git (push)
+  ```
+- **Verification:** `git remote -v` now shows the correct URL for both fetch and push, restoring Git connectivity for builds and Loveable publishing flows. This step replaces any stale Loveable/git configuration that still referenced the renamed repository.【a50ab8†L1-L4】
+
 ---
 
 ## Root Cause Analysis: 5-Minute Connection Errors in StrideGuide
